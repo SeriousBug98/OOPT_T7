@@ -16,6 +16,10 @@ public class CardServiceController {
     }
 
     public void proceedRefund(String cardNum, int price) {
+        boolean isVaild = cardCheck.checkCard(cardNum,price);
+        if(isVaild==true) refund.proceedRefund(cardNum,price);
+        else System.out.println("환불 실패");
+
 
     }
 }
