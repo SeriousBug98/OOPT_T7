@@ -5,6 +5,6 @@ public class MsgContent {
     private int itemNum;
     private int dvmX;
     private int dvmY;
-    String authenticationCode;
-    boolean availability;
+    private String authenticationCode;
+    private boolean availability;
 }
