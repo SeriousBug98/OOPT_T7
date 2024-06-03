@@ -1,48 +1,48 @@
 package dvm.domain.network;
 
 public class Message {
-    private MsgType type;
-    private String srcId;
-    private String dstId;
-    private MsgContent content;
+    public MsgType msg_type;
+    public String src_id;
+    public String dst_id;
+    public MsgContent msg_content;
 
 
     public Message(MsgType type, String srcId, String dstId, MsgContent content) {
-        this.type = type;
-        this.srcId = srcId;
-        this.dstId = dstId;
-        this.content = content;
+        this.msg_type = type;
+        this.src_id = srcId;
+        this.dst_id = dstId;
+        this.msg_content = content;
     }
 
     public MsgType getType() {
-        return type;
+        return msg_type;
     }
 
     public void setType(MsgType type) {
-        this.type = type;
+        this.msg_type = type;
     }
 
     public String getSrcId() {
-        return srcId;
+        return src_id;
     }
 
     public void setSrcId(String srcId) {
-        this.srcId = srcId;
+        this.src_id = srcId;
     }
 
     public String getDstId() {
-        return dstId;
+        return dst_id;
     }
 
     public void setDstId(String dstId) {
-        this.dstId = dstId;
+        this.dst_id = dstId;
     }
 
     public MsgContent getContent() {
-        return content;
+        return msg_content;
     }
 
     public void setContent(MsgContent content) {
-        this.content = content;
+        this.msg_content = content;
     }
 }

@@ -7,7 +7,7 @@ public enum MsgType {
             message.setContent(new MsgContent(item_code,item_num));
         }
     },
-    resp_sotck {
+    resp_stock {
         public void processMessage(Message message, int item_code, int item_num, int coor_x, int coor_y) {
             // RESP_STOCK에서 item_code, item_num, coor_x, coor_y 사용
             message.setContent(new MsgContent(item_code,item_num,coor_x,coor_y));
