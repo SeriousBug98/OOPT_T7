@@ -1,19 +1,19 @@
 package dvm.domain.network;
 
 public class Message {
-    private MsgType type;
-    private String srcId;
-    private String dstId;
-    private MsgContent content;
+    public MsgType msg_type;
+    public String src_id;
+    public String dst_id;
+    public MsgContent msg_content;
 
     public Message(String srcId) {
-        this.srcId = srcId;
+        this.src_id = srcId;
     }
 
     public Message(MsgType type, String srcId, String dstId, MsgContent content) {
-        this.type = type;
-        this.srcId = srcId;
-        this.dstId = dstId;
-        this.content = content;
+        this.msg_type = type;
+        this.src_id = srcId;
+        this.dst_id = dstId;
+        this.msg_content = content;
     }
 }
