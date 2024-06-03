@@ -19,12 +19,34 @@ public class RequestFromServiceControllerTest {
 
     }
     @Test
-    void process() {
-        Message message = new Message(MsgType.REQ_PREPAY, 1, 0, new MsgContent(1, 1));
+    void sendStockRequestFromTest() {
+        Message message = new Message(MsgType.req_prepay, "team1", "team7", new MsgContent(1, 1));
 
         RequestFromServiceController requestFromServiceController = new RequestFromServiceController();
         requestFromServiceController.sendStockRequestFrom(message);
 
+    }
+
+    @Test
+    void receiveStockRequestFromTest() {
+        RequestFromServiceController requestFromServiceController = new RequestFromServiceController();
+        requestFromServiceController.receiveStockRequestFrom();
+
+    }
+
+    @Test
+    void receivePrepayRequestFromTest() {
+        RequestFromServiceController requestFromServiceController = new RequestFromServiceController();
+        requestFromServiceController.receivePrepayRequestFrom();
+
+    }
+
+    @Test
+    void checkItemNumTest() {
+        RequestFromServiceController requestFromServiceController = new RequestFromServiceController();
+
+        Assertions.assertTrue(requestFromServiceController.checkItemNum(1, 1));
+        Assertions.assertFalse(requestFromServiceController.checkItemNum(1, 11));
     }
 
 }

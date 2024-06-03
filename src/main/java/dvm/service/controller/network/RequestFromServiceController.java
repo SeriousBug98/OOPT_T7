@@ -25,19 +25,19 @@ public class RequestFromServiceController {
         int dvmX = 0;
         int dvmY = 0;
 
-        MsgType msgType = msg.type;
-        int src_id = 7; //우리 DVM의 id
-        int dst_id = msg.srcId; //요청이 왔던 DVM의 id
-        int itemCode = msg.content.itemCode;
+        MsgType msgType = msg.msg_type;
+        String src_id = "team7"; //우리 DVM의 id
+        String dst_id = msg.src_id; //요청이 왔던 DVM의 id
+        int itemCode = msg.msg_content.item_code;
 
-        if (msgType != MsgType.REQ_STOCK){
+        if (msgType != MsgType.req_stock){
             System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
             return;
         }
 
         int itemCount = itemRepository.countItem(itemCode);
         MsgContent msgContent = new MsgContent(itemCode, itemCount, dvmX, dvmY);
-        Message message = new Message(MsgType.RESP_STOCK, src_id, dst_id, msgContent);
+        Message message = new Message(MsgType.resp_stock, src_id, dst_id, msgContent);
         
         //메시지 보내기 - JsonServer
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -62,8 +62,8 @@ public class RequestFromServiceController {
     //SD에 없음...
     public void sendPrepayRequestFrom(Message msg){
 
-
     }
+
     //usecase 12
     //other DVM에서 온 재고 확인 요청을 받음
     public void receiveStockRequestFrom(){
@@ -102,15 +102,15 @@ public class RequestFromServiceController {
                 service.start();
 
                 Message msg = service.receiveMessage(Message.class);
-                MsgType msgType = msg.type;
-                int src_id = 7; //우리 DVM의 id
-                int dst_id = msg.srcId; //요청이 왔던 DVM의 id
-                int itemCode = msg.content.itemCode;
-                int itemNum = msg.content.itemNum;
+                MsgType msgType = msg.msg_type;
+                String src_id = "team7"; //우리 DVM의 id
+                String dst_id = msg.src_id; //요청이 왔던 DVM의 id
+                int itemCode = msg.msg_content.item_code;
+                int itemNum = msg.msg_content.item_num;
 
                 boolean availability = true;
 
-                if (msgType != MsgType.REQ_PREPAY){
+                if (msgType != MsgType.req_prepay){
                     System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
                     return;
                 }
@@ -125,7 +125,7 @@ public class RequestFromServiceController {
 
                 int itemCount = itemRepository.countItem(itemCode);
                 MsgContent msgContent = new MsgContent(itemCode, itemCount, availability);
-                Message message = new Message(MsgType.RESP_PREPAY, src_id, dst_id, msgContent);
+                Message message = new Message(MsgType.resp_prepay, src_id, dst_id, msgContent);
 
                 service.sendMessage(message);
 

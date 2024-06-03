@@ -26,7 +26,7 @@ public class JsonServer {
                 service.sendMessage("Hello from server");
 
                 Message msg = service.receiveMessage(Message.class);
-                System.out.println("msg = " + msg.type);
+                System.out.println("msg = " + msg.msg_type);
 
                 service.stop();
             }

@@ -1,33 +1,33 @@
 package dvm.domain.network;
 
 public class MsgContent {
-    public int itemCode;
-    public int itemNum;
+    public int item_code;
+    public int item_num;
     public int dvmX;
     public int dvmY;
-    public String authenticationCode;
+    public String cert_code;
     public boolean availability;
 
     public MsgContent(int itemCode, int itemNum) {
-        this.itemCode = itemCode;
-        this.itemNum = itemNum;
+        this.item_code = itemCode;
+        this.item_num = itemNum;
     }
 
     public MsgContent(int itemCode, int itemNum, int dvmX, int dvmY) {
-        this.itemCode = itemCode;
-        this.itemNum = itemNum;
+        this.item_code = itemCode;
+        this.item_num = itemNum;
         this.dvmX = dvmX;
         this.dvmY = dvmY;
     }
 
     public MsgContent(int itemCode, int itemNum, String authenticationCode) {
-        this.itemCode = itemCode;
-        this.itemNum = itemNum;
-        this.authenticationCode = authenticationCode;
+        this.item_code = itemCode;
+        this.item_num = itemNum;
+        this.cert_code = authenticationCode;
     }
     public MsgContent(int itemCode, int itemNum, boolean availability) {
-        this.itemCode = itemCode;
-        this.itemNum = itemNum;
+        this.item_code = itemCode;
+        this.item_num = itemNum;
         this.availability = availability;
     }
 }
