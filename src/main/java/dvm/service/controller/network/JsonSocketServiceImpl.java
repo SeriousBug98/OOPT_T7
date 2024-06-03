@@ -48,6 +48,7 @@ public class JsonSocketServiceImpl implements JsonSocketService{
     @Override
     public <T> T receiveMessage(Class<T> clazz) {
         try {
+            // JSON 형식의 문자열을 Java 객체로 변환
             return gson.fromJson(reader.readLine(), clazz);
         } catch (Exception e) {
             throw new RuntimeException("Error receiving message", e);
