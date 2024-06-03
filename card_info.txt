@@ -1,0 +1,10 @@
+abcd,0
+efgh,3000
+ijkl,3000
+mnop,1000
+qrst,12000
+uvwx,15000
+yzab,3000
+cdef,8000
+ghij,4000
+klmn,9500
