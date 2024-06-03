@@ -1,8 +1,8 @@
 package dvm.domain.network;
 
 public enum MsgType {
-    REQ_STOCK,
-    RESP_STOCK,
-    REQ_PREPAY,
-    RESP_PREPAY
+    req_stock,
+    resp_stock,
+    req_prepay,
+    resp_prepay;
 }
