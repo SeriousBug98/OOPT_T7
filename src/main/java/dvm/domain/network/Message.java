@@ -10,7 +10,7 @@ public class Message {
         this.srcId = srcId;
     }
 
-    public Message(MsgType type, int srcId, int dstId, MsgContent content) {
+    public Message(MsgType type, String srcId, String dstId, MsgContent content) {
         this.type = type;
         this.srcId = srcId;
         this.dstId = dstId;
