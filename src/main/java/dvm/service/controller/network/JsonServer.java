@@ -28,32 +28,35 @@ public class JsonServer {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                JsonSocketServiceImpl service = new JsonSocketServiceImpl(clientSocket);
-                service.start();
-
-                Message message = service.receiveMessage(Message.class);
-                System.out.println("Received message msg_type: " + message.msg_type);
-                System.out.println("Received message src_id: " + message.src_id);
-                System.out.println("Received message dst_id: " + message.dst_id);
-                System.out.println("Received message item_code: " + message.msg_content.item_code);
-                System.out.println("Received message item_num: " + message.msg_content.item_num);
-                System.out.println();
-
-                if (message.msg_type == MsgType.req_stock){
+                new Thread(() ->{
+                    JsonSocketServiceImpl service = new JsonSocketServiceImpl(clientSocket);
                     RequestFromServiceController requestFromServiceController = new RequestFromServiceController();
-                    Message ServerToClientMessage = requestFromServiceController.sendStockRequestFrom(message);
-                    service.sendMessage(ServerToClientMessage);
+                    service.start();
 
-                } else if (message.msg_type == MsgType.req_prepay) {
+                    Message message = service.receiveMessage(Message.class);
+                    System.out.println("Received message msg_type: " + message.msg_type);
+                    System.out.println("Received message src_id: " + message.src_id);
+                    System.out.println("Received message dst_id: " + message.dst_id);
+                    System.out.println("Received message item_code: " + message.msg_content.item_code);
+                    System.out.println("Received message item_num: " + message.msg_content.item_num);
+                    if (message.msg_content.cert_code != null)
+                        System.out.println("Received message cert_code: " + message.msg_content.cert_code);
+                    System.out.println();
 
-                }else service.stop();
+                    if (message.msg_type == MsgType.req_stock){
+                        Message ServerToClientMessage = requestFromServiceController.receiveStockRequestFrom(message);
+                        service.sendMessage(ServerToClientMessage);
 
+                    } else if (message.msg_type == MsgType.req_prepay) {
+                        Message ServerToClientMessage = requestFromServiceController.receivePrepayRequestFrom(message);
+                        service.sendMessage(ServerToClientMessage);
+
+                    }else service.stop();
+                }).start();
             }
         } catch (IOException e) {
             System.out.println("Server exception: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
-
 }

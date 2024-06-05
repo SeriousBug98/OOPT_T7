@@ -38,6 +38,33 @@ public class JsonClient {
             System.out.println("Send message dvmX: " + response.msg_content.dvmX);
             System.out.println();
 
+            service.stop();
+
+
+        } catch (Exception e) {
+            System.out.println("Client exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void startClient2() {
+        try (Socket socket = new Socket(host, port)) {
+            JsonSocketServiceImpl service = new JsonSocketServiceImpl(socket);
+            service.start();
+
+            Message message2 = new Message(MsgType.req_prepay, "team1", "team7", new MsgContent(19, 1, "12345"));
+            service.sendMessage(message2);
+
+            Message response2 = service.receiveMessage(Message.class);
+            System.out.println("Send message msg_type: " + response2.msg_type);
+            System.out.println("Send message src_id: " + response2.src_id);
+            System.out.println("Send message dst_id: " + response2.dst_id);
+            System.out.println("Send message item_code: " + response2.msg_content.item_code);
+            System.out.println("Send message item_num: " + response2.msg_content.item_num);
+            System.out.println("Send message availability: " + response2.msg_content.availability);
+            System.out.println();
+
+            service.stop();
 
         } catch (Exception e) {
             System.out.println("Client exception: " + e.getMessage());
