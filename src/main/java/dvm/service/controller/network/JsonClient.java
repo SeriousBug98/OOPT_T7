@@ -1,6 +1,8 @@
 package dvm.service.controller.network;
 
 import dvm.domain.network.Message;
+import dvm.domain.network.MsgContent;
+import dvm.domain.network.MsgType;
 
 import java.net.Socket;
 
@@ -8,6 +10,9 @@ public class JsonClient {
 
     private String host;
     private int port;
+    private static final JsonClient instance = new JsonClient("localhost", 18080);
+    //host를 남의 DVM으로
+    public static JsonClient getInstance() {return instance;}
 
 
     public JsonClient(String host, int port) {
@@ -20,12 +25,20 @@ public class JsonClient {
             JsonSocketServiceImpl service = new JsonSocketServiceImpl(socket);
             service.start();
 
-            // 서버로 메시지를 보내고 응답을 받습니다.
-            service.sendMessage("Client hi");
-            String response = service.receiveMessage(String.class);
-            System.out.println("response = " + response);
+            Message message = new Message(MsgType.req_stock, "team1", "team7", new MsgContent(1, 1));
+            service.sendMessage(message);
 
-            service.stop();
+            Message response = service.receiveMessage(Message.class);
+            System.out.println("Send message msg_type: " + response.msg_type);
+            System.out.println("Send message src_id: " + response.src_id);
+            System.out.println("Send message dst_id: " + response.dst_id);
+            System.out.println("Send message item_code: " + response.msg_content.item_code);
+            System.out.println("Send message item_num: " + response.msg_content.item_num);
+            System.out.println("Send message dvmY: " + response.msg_content.dvmY);
+            System.out.println("Send message dvmX: " + response.msg_content.dvmX);
+            System.out.println();
+
+
         } catch (Exception e) {
             System.out.println("Client exception: " + e.getMessage());
             e.printStackTrace();

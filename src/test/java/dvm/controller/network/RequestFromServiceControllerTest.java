@@ -20,6 +20,7 @@ public class RequestFromServiceControllerTest {
     }
     @Test
     void sendStockRequestFromTest() {
+
         Message message = new Message(MsgType.req_prepay, "team1", "team7", new MsgContent(1, 1));
 
         RequestFromServiceController requestFromServiceController = new RequestFromServiceController();

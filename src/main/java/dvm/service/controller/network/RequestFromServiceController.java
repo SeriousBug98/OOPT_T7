@@ -13,15 +13,16 @@ import java.util.List;
 
 public class RequestFromServiceController {
 
-    private int port = 18080; //일단 임시 8080 (임의 추가)
-    private List<Message> messages; //필요한가?
+    private int port = 9090; //일단 임시 8080 (임의 추가)
+    private List<Message> messages;
     private AuthenticationCodeRepository authenticationCodeRepository = AuthenticationCodeRepository.getInstance();
     private ItemRepository itemRepository = ItemRepository.getInstance();
+
 
     //usecase 8
     //other DVM에게 받은 재고확인 요청에 대한 처리를 하고 응답을 보냄
     //sd와 class diagram 에서 인자 다름 (일단 클다 보고 함)
-    public void sendStockRequestFrom(Message msg){
+    public Message sendStockRequestFrom(Message msg){
         int dvmX = 0;
         int dvmY = 0;
 
@@ -32,30 +33,16 @@ public class RequestFromServiceController {
 
         if (msgType != MsgType.req_stock){
             System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
-            return;
+            return null;
         }
 
         int itemCount = itemRepository.countItem(itemCode);
         MsgContent msgContent = new MsgContent(itemCode, itemCount, dvmX, dvmY);
         Message message = new Message(MsgType.resp_stock, src_id, dst_id, msgContent);
+
+
         
-        //메시지 보내기 - JsonServer
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
-
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                JsonSocketServiceImpl service = new JsonSocketServiceImpl(clientSocket);
-                service.start();
-
-                service.sendMessage(message);
-
-                service.stop();
-            }
-        } catch (Exception e) {
-            System.out.println("Server exception: " + e.getMessage());
-            e.printStackTrace();
-        }
+        return message;
     }
 
     //other DVM에게 선결제 확인 메시지를 보냄
@@ -77,8 +64,27 @@ public class RequestFromServiceController {
                 service.start();
 
                 Message msg = service.receiveMessage(Message.class);
+
+
+                int dvmX = 0;
+                int dvmY = 0;
+
+                MsgType msgType = msg.msg_type;
+                String src_id = "team7"; //우리 DVM의 id
+                String dst_id = msg.src_id; //요청이 왔던 DVM의 id
+                int itemCode = msg.msg_content.item_code;
+
+                if (msgType != MsgType.req_stock){
+                    System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
+                    return;
+                }
+
                 //itemCheck.process 를 쓰면 재고 count 정보를 알 수 없음
-                sendStockRequestFrom(msg);
+                int itemCount = itemRepository.countItem(itemCode);
+                MsgContent msgContent = new MsgContent(itemCode, itemCount, dvmX, dvmY);
+                Message message = new Message(MsgType.resp_stock, src_id, dst_id, msgContent);
+
+                service.sendMessage(message);
 
                 service.stop();
             }
