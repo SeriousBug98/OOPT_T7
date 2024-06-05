@@ -6,13 +6,14 @@ public class CardServiceController {
     private Payment payment = new Payment();
     private Refund refund = new Refund();
 
-    public void proceedPayment(String cardNum, int price) {
+    public boolean proceedPayment(String cardNum, int price) {
         //cardNum은 UI단에서 받아옴
 
         boolean isVaild = cardCheck.checkCard(cardNum,price);
         if(isVaild==true) payment.proceedPayment(cardNum,price);
         else System.out.println("결제 실패");
 
+        return isVaild;
     }
 
     public void proceedRefund(String cardNum, int price) {
