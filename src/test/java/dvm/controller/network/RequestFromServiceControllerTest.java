@@ -8,7 +8,7 @@ public class RequestFromServiceControllerTest {
     static JsonServer jsonServer = JsonServer.getInstance();
     static JsonClient jsonClient = JsonClient.getInstance();
 
-    public static void main(String[] args) {
+    void RequestTesting(String[] args) {
         // 서버 스레드 실행
         Thread serverThread = new Thread(() -> {
             jsonServer.startServer();
@@ -36,4 +36,6 @@ public class RequestFromServiceControllerTest {
             e.printStackTrace();
         }
     }
+
+
 }
