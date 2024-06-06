@@ -1,11 +1,15 @@
 package dvm.controller.network;
 
 import com.google.gson.Gson;
+import dvm.domain.authentication.AuthenticationCodeRepository;
+import dvm.domain.item.ItemRepository;
 import dvm.domain.network.Message;
 import dvm.domain.network.MsgContent;
 import dvm.domain.network.MsgType;
+import dvm.service.controller.authenticaiton.AuthenticationCodeFind;
 import dvm.service.controller.network.JsonServer;
 import dvm.service.controller.network.RequestFromServiceController;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.*;
 import java.net.Socket;
@@ -103,6 +107,15 @@ public class RequestFromServiceControllerTest {
             System.out.println("Received response getItem_num: " + responseMessage.getContent().getItem_num());
             System.out.println("Received response isAvailability: " + responseMessage.getContent().isAvailability());
             System.out.println();
+
+            ItemRepository itemRepository = ItemRepository.getInstance();
+            System.out.println(itemRepository.countItem(responseMessage.getContent().getItem_code()));
+            Assertions.assertEquals(9, itemRepository.countItem(responseMessage.getContent().getItem_code()));
+
+
+            AuthenticationCodeFind authenticationCodeFind = new AuthenticationCodeFind();
+            System.out.println(authenticationCodeFind.process("12345"));
+            Assertions.assertTrue(authenticationCodeFind.process("12345"));
 
         } catch (IOException e) {
             e.printStackTrace();
