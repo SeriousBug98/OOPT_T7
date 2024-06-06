@@ -153,5 +153,10 @@ public class RequestToServiceController {
     public AuthenticationCodeRepository getAuthenticationCodeRepository() {
         return authenticationCodeRepository;
     }
+
+    // availableDVMMessages 리스트를 반환하는 메서드 추가해도되나..
+    public List<Message> getAvailableDVMMessages() {
+        return availableDVMMessages;
+    }
 }
 
