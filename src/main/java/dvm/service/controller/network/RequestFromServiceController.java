@@ -1,165 +1,85 @@
 package dvm.service.controller.network;
 
-import dvm.domain.authentication.AuthenticationCodeRepository;
 import dvm.domain.item.ItemRepository;
 import dvm.domain.network.Message;
 import dvm.domain.network.MsgContent;
 import dvm.domain.network.MsgType;
+import dvm.service.controller.authenticaiton.AuthenticationCodeSave;
 import dvm.service.controller.item.ItemCheck;
 
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.List;
-
+//other DVM에서 요청으로 받은 메시지를 처리해서 응답 메시지를 만듦
 public class RequestFromServiceController {
-
-    private int port = 18080; //일단 임시 8080 (임의 추가)
-    private List<Message> messages; //필요한가?
-    private AuthenticationCodeRepository authenticationCodeRepository = AuthenticationCodeRepository.getInstance();
     private ItemRepository itemRepository = ItemRepository.getInstance();
+    private AuthenticationCodeSave authenticationCodeSave = new AuthenticationCodeSave();
 
-    //usecase 8
-    //other DVM에게 받은 재고확인 요청에 대한 처리를 하고 응답을 보냄
-    //sd와 class diagram 에서 인자 다름 (일단 클다 보고 함)
-    public void sendStockRequestFrom(Message msg){
+    //usecase 8 / 12
+    //other DVM에게 보낼 재고 확인 응답 메시지 생성
+    //8과 12에서 똑같은 일을 하는 것 같아서 12번 receiveStockRequestFrom만 남겼습니다.
+    public Message receiveStockRequestFrom(Message msg){
         int dvmX = 0;
         int dvmY = 0;
 
-        MsgType msgType = msg.msg_type;
+        MsgType msgType = msg.getType();
         String src_id = "team7"; //우리 DVM의 id
-        String dst_id = msg.src_id; //요청이 왔던 DVM의 id
-        int itemCode = msg.msg_content.item_code;
+        String dst_id = msg.getSrcId(); //요청이 왔던 DVM의 id
+        int itemCode = msg.getContent().getItem_code();
 
         if (msgType != MsgType.req_stock){
             System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
-            return;
+            return null;
         }
 
+        //itemCheck.process 를 쓰면 재고 개수를 알 수 없음
+        // -> itemRepository 의 countItem 사용했습니다.
         int itemCount = itemRepository.countItem(itemCode);
         MsgContent msgContent = new MsgContent(itemCode, itemCount, dvmX, dvmY);
         Message message = new Message(MsgType.resp_stock, src_id, dst_id, msgContent);
 
-        //메시지 보내기 - JsonServer
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
-
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                JsonSocketServiceImpl service = new JsonSocketServiceImpl(clientSocket);
-                service.start();
-
-                service.sendMessage(message);
-
-                service.stop();
-            }
-        } catch (Exception e) {
-            System.out.println("Server exception: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    //other DVM에게 선결제 확인 메시지를 보냄
-    //SD에 없음...
-    public void sendPrepayRequestFrom(Message msg){
-
+        return message;
     }
 
     //usecase 12
-    //other DVM에서 온 재고 확인 요청을 받음
-    public void receiveStockRequestFrom(){
-        //메시지 받기 - JsonServer
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
+    //other DVM에게 보낼 선결제 응답 메시지 생성
+    public Message receivePrepayRequestFrom(Message msg){
+        MsgType msgType = msg.getType();
+        String src_id = msg.getDstId(); //우리 DVM의 id
+        String dst_id = msg.getSrcId(); //요청이 왔던 DVM의 id
+        int itemCode = msg.getContent().getItem_code();
+        int itemNum = msg.getContent().getItem_num();
+        String cert_code = msg.getContent().getCert_code();
 
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                JsonSocketServiceImpl service = new JsonSocketServiceImpl(clientSocket);
-                service.start();
+        boolean availability = true;
 
-                Message msg = service.receiveMessage(Message.class);
-
-
-                int dvmX = 0;
-                int dvmY = 0;
-
-                MsgType msgType = msg.msg_type;
-                String src_id = "team7"; //우리 DVM의 id
-                String dst_id = msg.src_id; //요청이 왔던 DVM의 id
-                int itemCode = msg.msg_content.item_code;
-
-                if (msgType != MsgType.req_stock){
-                    System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
-                    return;
-                }
-
-                //itemCheck.process 를 쓰면 재고 count 정보를 알 수 없음
-                int itemCount = itemRepository.countItem(itemCode);
-                MsgContent msgContent = new MsgContent(itemCode, itemCount, dvmX, dvmY);
-                Message message = new Message(MsgType.resp_stock, src_id, dst_id, msgContent);
-
-                service.sendMessage(message);
-
-                service.stop();
-            }
-
-        } catch (Exception e) {
-            System.out.println("Server exception: " + e.getMessage());
-            e.printStackTrace();
+        if (!msg.getDstId().equals("team7")){
+            System.out.println("메시지 수신 에러 : 도착지가 현재 DVM이 아닙니다.");
+            return null;
         }
+        if (msgType != MsgType.req_prepay){
+            System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
+            return null;
+        }
+
+        //우리 DVM에서 재고가 부족할때 -> 선결제 불가로 응답
+        if (!checkItemNum(itemCode, itemNum)){
+            System.out.println("해당 음료에 대한 재고가 부족합니다.");
+            availability = false;
+        }
+        
+        //인증코드 저장
+        authenticationCodeSave.process(cert_code);
+
+        //checkItemNum 로직 사용 -> itemCheck.process 필요없음. 삭제
+        //itemRepository.countItem 이용해서 재고 개수 가져왔습니다.
+        int itemCount = itemRepository.countItem(itemCode);
+        MsgContent msgContent = new MsgContent(itemCode, itemCount, availability);
+        Message message = new Message(MsgType.resp_prepay, src_id, dst_id, msgContent);
+
+        return message;
     }
 
     //usecase 12
-    //other DVM에서 온 선결제 확인 메시지를 받음
-    public void receivePrepayRequestFrom(){
-        //메시지 받기 - JsonServer
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
-
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                JsonSocketServiceImpl service = new JsonSocketServiceImpl(clientSocket);
-                service.start();
-
-                Message msg = service.receiveMessage(Message.class);
-                MsgType msgType = msg.msg_type;
-                String src_id = "team7"; //우리 DVM의 id
-                String dst_id = msg.src_id; //요청이 왔던 DVM의 id
-                int itemCode = msg.msg_content.item_code;
-                int itemNum = msg.msg_content.item_num;
-
-                boolean availability = true;
-
-                if (msgType != MsgType.req_prepay){
-                    System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
-                    return;
-                }
-
-                //우리 DVM에서 재고가 부족할때 -> 선결제 불가로 응답
-                if (!checkItemNum(itemCode, itemNum)){
-                    System.out.println("해당 음료에 대한 재고가 부족합니다.");
-                    availability = false;
-                }
-
-                //itemCheck.process 로직 중복...
-
-                int itemCount = itemRepository.countItem(itemCode);
-                MsgContent msgContent = new MsgContent(itemCode, itemCount, availability);
-                Message message = new Message(MsgType.resp_prepay, src_id, dst_id, msgContent);
-
-                service.sendMessage(message);
-
-                service.stop();
-            }
-        } catch (Exception e) {
-            System.out.println("Server exception: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-
-    //usecase 12
-    //우리 DVM에 있는 음료의 개수를 초과해서 선결제 요청을 보낸다면 false
-    //인자 iemCode 추가 (없으면 불가)
+    //선결제 요청받은 개수가 우리 DVM에 있는 음료의 개수를 초과하면 false
+    //인자 itemCode 추가 (없으면 불가)
     public boolean checkItemNum(int itemCode, int itemNum){
         ItemCheck itemCheck = new ItemCheck();
 
