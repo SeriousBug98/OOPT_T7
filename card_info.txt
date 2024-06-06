@@ -3,7 +3,7 @@ efgh,0
 ijkl,0
 mnop,1000
 qrst,2000
-uvwx,12000
+uvwx,11000
 yzab,3000
 cdef,0
 ghij,4000
