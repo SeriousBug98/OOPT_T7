@@ -125,7 +125,7 @@ public class ChooseItemUI extends JPanel {
                         Message nearestDVM = requestToServiceController.getAvailableDVMMessages().get(nearestDVMIndex);
                         MsgContent msgContent = nearestDVM.getContent();
                         selectedDVMLocation = new int[]{msgContent.getCoor_x(), msgContent.getCoor_y()};
-                        authenticationCode = msgContent.getCert_code();  // 수정된 부분: 인증 코드 가져오기
+                        authenticationCode = msgContent.getCert_code();
                         System.out.println("선결제 가능한 DVM 위치: " + selectedDVMLocation[0] + ", " + selectedDVMLocation[1]);
                         System.out.println("인증 코드: " + authenticationCode);
                         showDVMLocation();
