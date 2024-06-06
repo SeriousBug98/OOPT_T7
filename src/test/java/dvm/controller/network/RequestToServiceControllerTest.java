@@ -7,6 +7,5 @@ class RequestToServiceControllerTest {
 
     RequestToServiceController requestToServiceController = new RequestToServiceController();
 
-    @Test
 
 }
