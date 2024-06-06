@@ -63,10 +63,13 @@ public class RequestFromServiceController {
         if (!checkItemNum(itemCode, itemNum)){
             System.out.println("해당 음료에 대한 재고가 부족합니다.");
             availability = false;
+        }//재고가 충분하면 인증코드 저장 & 재고 감소 시킴
+        else{
+            authenticationCodeSave.process(cert_code);
+            itemRepository.updateItemStock(itemCode, 0-itemNum);
         }
         
-        //인증코드 저장
-        authenticationCodeSave.process(cert_code);
+
 
         //checkItemNum 로직 사용 -> itemCheck.process 필요없음. 삭제
         //itemRepository.countItem 이용해서 재고 개수 가져왔습니다.
