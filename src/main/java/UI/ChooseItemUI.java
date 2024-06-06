@@ -1,5 +1,6 @@
 package UI;
 
+import dvm.domain.network.Message;
 import dvm.service.controller.card.CardServiceController;
 import dvm.service.controller.item.ItemCheck;
 import dvm.domain.item.ItemRepository;
@@ -117,26 +118,44 @@ public class ChooseItemUI extends JPanel {
             } else {
                 System.out.println("현재 DVM에 재고 부족, 다른 DVM에 재고 확인 요청");
                 // 다른 DVM에 재고 확인
-                boolean result = requestToServiceController.init(selectedItemId, selectedQuantity, cardNumber, selectedPrice);
-                if (result) {
-                    int nearestDVMIndex = requestToServiceController.getNearestDVMIndex(-1);
-                    if (nearestDVMIndex != -1) {
-                        // DVM 정보를 가져와서 처리
-                        Message nearestDVM = requestToServiceController.getAvailableDVMMessages().get(nearestDVMIndex);
-                        MsgContent msgContent = nearestDVM.getContent();
-                        selectedDVMLocation = new int[]{msgContent.getCoor_x(), msgContent.getCoor_y()};
-                        authenticationCode = msgContent.getCert_code();  // 수정된 부분: 인증 코드 가져오기
-                        System.out.println("선결제 가능한 DVM 위치: " + selectedDVMLocation[0] + ", " + selectedDVMLocation[1]);
-                        System.out.println("인증 코드: " + authenticationCode);
-                        showDVMLocation();
-                    } else {
-                        System.out.println("선결제 가능한 DVM 없음");
-                        cardLayout.show(mainPanel, "RefundScreen");
-                    }
-                } else {
-                    System.out.println("다른 DVM에 재고 없거나 선결제 실패");
+                requestToServiceController.sendStockRequest(selectedItemId,selectedQuantity);
+                boolean checkDVM = requestToServiceController.checkAvailableDVM(selectedItemId, selectedQuantity, cardNumber, selectedPrice);
+                Message nearestDVM = null;
+                if (checkDVM) nearestDVM = requestToServiceController.sendPrepayRequest(selectedItemId, selectedQuantity, cardNumber, selectedPrice);
+                if (nearestDVM != null) {
+                    MsgContent msgContent = nearestDVM.getContent();
+                    selectedDVMLocation = new int[]{msgContent.getCoor_x(), msgContent.getCoor_y()};
+                    authenticationCode = msgContent.getCert_code();  // 수정된 부분: 인증 코드 가져오기
+                    System.out.println("선결제 가능한 DVM 위치: " + selectedDVMLocation[0] + ", " + selectedDVMLocation[1]);
+                    System.out.println("인증 코드: " + authenticationCode);
+                    showDVMLocation();
+                }
+                else {
+                    System.out.println("선결제 가능한 DVM 없음");
                     cardLayout.show(mainPanel, "RefundScreen");
                 }
+//                if (result) {
+//                    int nearestDVMIndex = requestToServiceController.getNearestDVMIndex(-1);
+//                    if (nearestDVMIndex != -1) {
+//                        // DVM 정보를 가져와서 처리
+//                        Message nearestDVM = requestToServiceController.getAvailableDVMMessages().get(nearestDVMIndex);
+//                        MsgContent msgContent = nearestDVM.getContent();
+//                        selectedDVMLocation = new int[]{msgContent.getCoor_x(), msgContent.getCoor_y()};
+//                        authenticationCode = msgContent.getCert_code();  // 수정된 부분: 인증 코드 가져오기
+//                        System.out.println("선결제 가능한 DVM 위치: " + selectedDVMLocation[0] + ", " + selectedDVMLocation[1]);
+//                        System.out.println("인증 코드: " + authenticationCode);
+//                        showDVMLocation();
+//                    } else {
+//                        System.out.println("선결제 가능한 DVM 없음");
+//                        cardLayout.show(mainPanel, "RefundScreen");
+//                    }
+//                }
+//                else {
+//                    System.out.println("다른 DVM에 재고 없거나 선결제 실패");
+//                    cardLayout.show(mainPanel, "RefundScreen");
+//                }
+                selectedDVMLocation = new int[]{1, 2};
+                cardLayout.show(mainPanel, "PrepayScreen");
             }
         });
         panel.add(okButton);
