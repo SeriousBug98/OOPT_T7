@@ -63,6 +63,9 @@ public class RequestFromServiceController {
         if (!checkItemNum(itemCode, itemNum)){
             System.out.println("해당 음료에 대한 재고가 부족합니다.");
             availability = false;
+        }//재고가 충분하면 재고 감소 시킴
+        else{
+            itemRepository.updateItemStock(itemCode, 0-itemNum);
         }
         
         //인증코드 저장
