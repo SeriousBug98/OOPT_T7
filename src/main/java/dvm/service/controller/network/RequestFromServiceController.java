@@ -38,7 +38,7 @@ public class RequestFromServiceController {
         int itemCount = itemRepository.countItem(itemCode);
         MsgContent msgContent = new MsgContent(itemCode, itemCount, dvmX, dvmY);
         Message message = new Message(MsgType.resp_stock, src_id, dst_id, msgContent);
-        
+
         //메시지 보내기 - JsonServer
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server is listening on port " + port);

@@ -22,7 +22,7 @@ public class JsonClient {
 
             // 서버로 메시지를 보내고 응답을 받습니다.
             service.sendMessage("Client hi");
-            String response = service.receiveMessage(String.class);
+            Message response = service.receiveMessage(Message.class);
             System.out.println("response = " + response);
 
             service.stop();

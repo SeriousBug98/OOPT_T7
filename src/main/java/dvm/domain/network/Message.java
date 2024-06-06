@@ -1,10 +1,10 @@
 package dvm.domain.network;
 
 public class Message {
-    public MsgType msg_type;
-    public String src_id;
-    public String dst_id;
-    public MsgContent msg_content;
+    private MsgType msg_type;
+    private String src_id;
+    private String dst_id;
+    private MsgContent msg_content;
 
 
     public Message(MsgType type, String srcId, String dstId, MsgContent msgContent) {

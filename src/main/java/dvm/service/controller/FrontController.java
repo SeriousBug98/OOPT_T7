@@ -57,8 +57,4 @@ public class FrontController {
     public static RequestFromServiceController getRequestFromServiceController() {
         return requestFromServiceController;
     }
-
-    //    public void service(ModeType mode) {
-//
-//    }
 }

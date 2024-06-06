@@ -2,6 +2,7 @@ package dvm.domain.authentication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class AuthenticationCodeRepository {
 
@@ -23,5 +24,20 @@ public class AuthenticationCodeRepository {
 
     public void saveAuthenticationCode(String authenticationCode) {
         codes.add(authenticationCode);
+    }
+
+    public String createAuthenticationCode() {
+
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        int stringLength = 10;
+        Random random = new Random();
+
+        StringBuilder stringBuilder = new StringBuilder(stringLength);
+        for (int i = 0; i < stringLength; i++) {
+            int randomIndex = random.nextInt(characters.length());
+            stringBuilder.append(characters.charAt(randomIndex));
+        }
+
+        return stringBuilder.toString();
     }
 }
