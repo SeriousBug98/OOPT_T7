@@ -2,13 +2,15 @@ package dvm.controller.network;
 
 import dvm.service.controller.network.JsonClient;
 import dvm.service.controller.network.JsonServer;
+import org.junit.jupiter.api.Test;
 
 public class RequestFromServiceControllerTest {
     private static final int PORT = 9090;
     static JsonServer jsonServer = JsonServer.getInstance();
     static JsonClient jsonClient = JsonClient.getInstance();
 
-    void RequestTesting(String[] args) {
+    @Test
+    void RequestTesting() {
         // 서버 스레드 실행
         Thread serverThread = new Thread(() -> {
             jsonServer.startServer();
