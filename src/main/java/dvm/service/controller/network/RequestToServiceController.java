@@ -18,12 +18,21 @@ public class RequestToServiceController {
     private AuthenticationCodeRepository authenticationCodeRepository = AuthenticationCodeRepository.getInstance();
     private CardServiceController cardServiceController = new CardServiceController();
 
+    public boolean init(int item_code, int item_num, String card_num, int price) {
+        sendStockRequest(item_code, item_num);
+        boolean isChecked = checkAvailableDVM(item_code, item_num, card_num, price);
+        if(!isChecked) return false; // 가능한 DVM이 없을 때
+        isChecked = sendPrepayRequest(item_code, item_num, card_num, price);
+        if(!isChecked) return false; // 선결제 실패했을 때
+        return true;
+    }
+
     // 다른 모든 DVM들에게 재고확인 요청을 보냄
     public void sendStockRequest(int item_code, int item_num) {
 
         // 송신할 서버 IP와 Port 설정
         String host = "localhost";
-        int port = 8080;
+        int port = 9090;
 
         // 메시지 생성
         MsgType msgType = MsgType.req_stock;
@@ -33,8 +42,8 @@ public class RequestToServiceController {
         Message msg = new Message(msgType,src_id,dst_id,msgContent);
 
         // port 조정해야됨
-        for (int i = 0; i < 9; i++) {
-            try (Socket socket = new Socket(host, port+i)) {
+        //for (int i = 0; i < 9; i++) {
+            try (Socket socket = new Socket(host, port)) {
                 JsonSocketServiceImpl service = new JsonSocketServiceImpl(socket);
                 service.start();
 
@@ -47,23 +56,23 @@ public class RequestToServiceController {
                 System.out.println("Client exception: " + e.getMessage());
                 e.printStackTrace();
             }
-        }
+        //}
     }
 
     public boolean checkAvailableDVM(int item_code, int item_num, String card_num, int price) {
 
         boolean isChecked = false;
-        for (int i = 0; i < 9; i++) {
-            Message message = stockResponseMessages.get(i);
+        //for (int i = 0; i < 9; i++) {
+            Message message = stockResponseMessages.get(0);
             MsgContent msgContent = message.getContent();
             int otherDVMItemNum = msgContent.getItem_num();
             int otherDVMItemCode = msgContent.getItem_code();
 
-            if (item_num > otherDVMItemNum || item_code != otherDVMItemCode) continue;
+            if (item_num > otherDVMItemNum || item_code != otherDVMItemCode) return false;//continue;
 
             availableDVMMessages.add(message);
             isChecked = true;
-        }
+        //}
         if (isChecked == true) cardServiceController.proceedPayment(card_num,price);
 
         return isChecked;
@@ -93,7 +102,7 @@ public class RequestToServiceController {
         return index;
     }
 
-    public Message sendPrepayRequest(int item_code, int item_num, String card_num, int price) {
+    public boolean sendPrepayRequest(int item_code, int item_num, String card_num, int price) {
 
         // 송신할 서버의 IP와 포트 설정
         String host = "localhost";
@@ -101,7 +110,6 @@ public class RequestToServiceController {
 
         // 인증코드 생성
         String cert_code = authenticationCodeRepository.createAuthenticationCode();
-        authenticationCodeRepository.saveAuthenticationCode(cert_code);
 
         // 메시지 생성
         MsgType msgType = MsgType.req_prepay;
@@ -125,7 +133,7 @@ public class RequestToServiceController {
                 response = service.receiveMessage(Message.class);
                 if (response.getContent().isAvailability()) {
                     service.stop();
-                    return response;
+                    return true;
                 } else {
                     selectIndex = getNearestDVMIndex(selectIndex);
                     request.setDstId(availableDVMMessages.get(selectIndex).getSrcId());
@@ -139,20 +147,13 @@ public class RequestToServiceController {
 
         // 여기까지 오면 선결제 가능한 DVM이 없다는 뜻이다.
         cardServiceController.proceedRefund(card_num,price);
-        return null;
-    }
-
-    public void setStockResponseMessages(List<Message> stockResponseMessages) {
-        this.stockResponseMessages = stockResponseMessages;
-    }
-
-    public List<Message> getStockResponseMessages() {
-        return stockResponseMessages;
+        return false;
     }
 
     public AuthenticationCodeRepository getAuthenticationCodeRepository() {
         return authenticationCodeRepository;
     }
+
 
     // availableDVMMessages 리스트를 반환하는 메서드 추가해도되나..
     public List<Message> getAvailableDVMMessages() {
