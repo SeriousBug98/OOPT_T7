@@ -3,16 +3,21 @@ package dvm.controller.authentication;
 import dvm.domain.authentication.AuthenticationCodeRepository;
 import dvm.service.controller.network.RequestToServiceController;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class AuthenticationCodeCreateTest {
 
-    RequestToServiceController requestToServiceController =  new RequestToServiceController();
+    AuthenticationCodeRepository authenticationCodeRepository;
+
+    @BeforeEach
+    void beforeEach() {
+        authenticationCodeRepository = AuthenticationCodeRepository.getInstance();
+    }
 
     @Test
     void testRandomStringLength() {
         //given
-        AuthenticationCodeRepository authenticationCodeRepository = requestToServiceController.getAuthenticationCodeRepository();
         int length = 10;
         //when
         String actualString = authenticationCodeRepository.createAuthenticationCode();
@@ -23,7 +28,6 @@ class AuthenticationCodeCreateTest {
     @Test
     void testRandomStringContents() {
         //given
-        AuthenticationCodeRepository authenticationCodeRepository = requestToServiceController.getAuthenticationCodeRepository();
         String validCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         //when
         String actualString = authenticationCodeRepository.createAuthenticationCode();
@@ -36,7 +40,6 @@ class AuthenticationCodeCreateTest {
     @Test
     void testRandomStringsAreUnique() {
         //given
-        AuthenticationCodeRepository authenticationCodeRepository = requestToServiceController.getAuthenticationCodeRepository();
         //when
         String actualString1 = authenticationCodeRepository.createAuthenticationCode();
         String actualString2 = authenticationCodeRepository.createAuthenticationCode();
