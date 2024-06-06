@@ -7,11 +7,11 @@ public class Message {
     public MsgContent msg_content;
 
 
-    public Message(MsgType type, String srcId, String dstId, MsgContent content) {
+    public Message(MsgType type, String srcId, String dstId, MsgContent msgContent) {
         this.msg_type = type;
         this.src_id = srcId;
         this.dst_id = dstId;
-        this.msg_content = content;
+        this.msg_content = msgContent;
     }
 
     public MsgType getType() {

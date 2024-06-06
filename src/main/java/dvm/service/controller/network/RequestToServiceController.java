@@ -1,6 +1,10 @@
 package dvm.service.controller.network;
 
+import dvm.domain.authentication.AuthenticationCodeRepository;
+import dvm.domain.item.ItemRepository;
 import dvm.domain.network.Message;
+import dvm.domain.network.MsgContent;
+import dvm.domain.network.MsgType;
 
 import java.net.Socket;
 
@@ -8,24 +12,34 @@ public class RequestToServiceController {
 
     private String host = "localhost";
     private int port = 8080;
+    private ItemRepository itemRepository = ItemRepository.getInstance();
+    private AuthenticationCodeRepository authenticationCodeRepository = AuthenticationCodeRepository.getInstance();
 
-    public void startRequest() {
-        try (Socket socket = new Socket(host, port)) {
-            JsonSocketServiceImpl service = new JsonSocketServiceImpl(socket);
-            service.start();
+    // 다른 모든 DVM들에게 재고확인 요청을 보냄
+    public void sendStockRequestTo() {
 
-            // 서버로 메시지를 보내고 응답을 받습니다.
-            Message message = new Message()
+        // 메시지 생성
+        MsgType msgType = MsgType.req_stock;
+        MsgContent msgContent = new MsgContent(10,10);
+        String src_id = "Team7";
+        String dst_id = "0";
+        Message msg = new Message(msgType,src_id,dst_id,msgContent);
 
+        for (int i = 0; i < 9; i++) {
+            try (Socket socket = new Socket(host, port+i)) {
+                JsonSocketServiceImpl service = new JsonSocketServiceImpl(socket);
+                service.start();
 
-            service.sendMessage("Client hi");
-            String response = service.receiveMessage(String.class);
-            System.out.println("response = " + response);
+                service.sendMessage(msg);
 
-            service.stop();
-        } catch (Exception e) {
-            System.out.println("Client exception: " + e.getMessage());
-            e.printStackTrace();
+                String response = service.receiveMessage(String.class);
+                System.out.println("response = " + response);
+
+                service.stop();
+            } catch (Exception e) {
+                System.out.println("Client exception: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 }
