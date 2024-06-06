@@ -6,21 +6,36 @@ public class CardServiceController {
     private Payment payment = new Payment();
     private Refund refund = new Refund();
 
+    public boolean isCardValid(String cardNum) {
+        return cardCheck.checkCardNum(cardNum); // 카드 정보만 확인
+    }
+
+    public boolean isBalanceSufficient(String cardNum, int price) {
+        return cardCheck.checkCardBalance(cardNum, price); // 카드 잔액 확인
+    }
+
     public boolean proceedPayment(String cardNum, int price) {
-        //cardNum은 UI단에서 받아옴
+        // cardNum은 UI단에서 받아옴
+        boolean isCardValid = isCardValid(cardNum);
+        boolean isBalanceSufficient = isCardValid && isBalanceSufficient(cardNum, price);
 
-        boolean isVaild = cardCheck.checkCard(cardNum,price);
-        if(isVaild==true) payment.proceedPayment(cardNum,price);
-        else System.out.println("결제 실패");
+        if (isBalanceSufficient) {
+            payment.proceedPayment(cardNum, price);
+        } else {
+            System.out.println("결제 실패");
+        }
 
-        return isVaild;
+        return isBalanceSufficient;
     }
 
     public void proceedRefund(String cardNum, int price) {
-        boolean isVaild = cardCheck.checkCard(cardNum,price);
-        if(isVaild==true) refund.proceedRefund(cardNum,price);
-        else System.out.println("환불 실패");
+        boolean isCardValid = isCardValid(cardNum);
+        boolean isBalanceSufficient = isCardValid && isBalanceSufficient(cardNum, price);
 
-
+        if (isBalanceSufficient) {
+            refund.proceedRefund(cardNum, price);
+        } else {
+            System.out.println("환불 실패");
+        }
     }
 }

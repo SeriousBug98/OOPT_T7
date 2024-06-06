@@ -258,12 +258,15 @@ public class CardInputUI extends JFrame {
         okButton.setBounds(250, 250, 100, 30);
         okButton.addActionListener(e -> {
             String cardNumber = cardInputField.getText();
-            boolean isValidCard = cardServiceController.proceedPayment(cardNumber, price);
+            boolean isValidCard = cardServiceController.isCardValid(cardNumber);
+            //카드 isCardValid 메서드 사용하여 카드번호만 가지고 카드 정보 확인
 
             if (isValidCard) {
-                boolean hasSufficientBalance = cardServiceController.proceedPayment(cardNumber, price);
+                boolean hasSufficientBalance = cardServiceController.isBalanceSufficient(cardNumber, price);
+                //isBalanceSufficient메서드 사용하아 카드 정보와, 가격을 통해 카드 잔액확인
                 if (hasSufficientBalance) {
                     cardServiceController.proceedPayment(cardNumber, price);
+                    //결제 진행
                     onSuccess.run();
                     dispose();
                 } else {
