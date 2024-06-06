@@ -29,6 +29,7 @@ public class MsgContent {
     public MsgContent(int item_code, int item_num, boolean availability) {
         this.item_code = item_code;
         this.item_num = item_num;
+        this.availability = availability;
     }
 
     public int getItem_code() {
