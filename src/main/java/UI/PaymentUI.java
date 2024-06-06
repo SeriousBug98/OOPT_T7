@@ -10,7 +10,7 @@ public class PaymentUI extends JFrame {
     private JPanel paymentFailureScreen;
 
     public PaymentUI(boolean isSuccess, Runnable goToMainMenu, Runnable goToBeverageSelection) {
-        setTitle("Team 7 - Distributed Vending Machine - Payment");
+        setTitle("Team 7 - Distributed Vending Machine");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 400);
         setLocationRelativeTo(null);
@@ -34,9 +34,9 @@ public class PaymentUI extends JFrame {
 
     private JPanel createPaymentSuccessScreen(Runnable goToMainMenu) {
         JPanel panel = new JPanel();
-        panel.setLayout(null); // Absolute positioning
+        panel.setLayout(null);
 
-        JLabel titleLabel = new JLabel("결제 완료", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("결제 성공", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setOpaque(true);
         titleLabel.setBackground(new Color(0x3B5998));
@@ -45,7 +45,7 @@ public class PaymentUI extends JFrame {
         panel.add(titleLabel);
 
         JLabel messageLabel1 = new JLabel("<html><center><br>결제가 성공적으로 진행되었습니다.</center></html>", JLabel.CENTER);
-        JLabel messageLabel2 = new JLabel("<html><center><br>이용해주셔서 감사합니다.</center></html>", JLabel.CENTER);
+        JLabel messageLabel2 = new JLabel("<html><center><br>구매해주셔서 감사합니다.</center></html>", JLabel.CENTER);
         messageLabel1.setFont(new Font("Arial", Font.PLAIN, 16));
         messageLabel2.setFont(new Font("Arial", Font.PLAIN, 16));
         messageLabel1.setBounds(50, 100, 500, 100);
@@ -53,7 +53,7 @@ public class PaymentUI extends JFrame {
         panel.add(messageLabel1);
         panel.add(messageLabel2);
 
-        JButton mainMenuButton = new JButton("메인 화면으로 돌아가기");
+        JButton mainMenuButton = new JButton("메인 메뉴로 돌아가기");
         styleButton(mainMenuButton);
         mainMenuButton.setBounds(200, 250, 200, 50);
         mainMenuButton.addActionListener(e -> {
@@ -67,7 +67,7 @@ public class PaymentUI extends JFrame {
 
     private JPanel createPaymentFailureScreen(Runnable goToBeverageSelection) {
         JPanel panel = new JPanel();
-        panel.setLayout(null); // Absolute positioning
+        panel.setLayout(null);
 
         JLabel titleLabel = new JLabel("Message", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -77,8 +77,8 @@ public class PaymentUI extends JFrame {
         titleLabel.setBounds(0, 0, 600, 50);
         panel.add(titleLabel);
 
-        JLabel messageLabel1 = new JLabel("<html><center>⚠️<br>해당 카드의 잔액이 부족합니다.</center></html>", JLabel.CENTER);
-        JLabel messageLabel2 = new JLabel("<html><center><br>음료 선택 화면으로 돌아갑니다.</center></html>", JLabel.CENTER);
+        JLabel messageLabel1 = new JLabel("<html><center><br>결제에 실패하였습니다.</center></html>", JLabel.CENTER);
+        JLabel messageLabel2 = new JLabel("<html><center><br>메인 메뉴로 돌아갑니다.</center></html>", JLabel.CENTER);
         messageLabel1.setFont(new Font("Arial", Font.PLAIN, 16));
         messageLabel2.setFont(new Font("Arial", Font.PLAIN, 16));
         messageLabel1.setBounds(50, 100, 500, 100);
@@ -86,7 +86,7 @@ public class PaymentUI extends JFrame {
         panel.add(messageLabel1);
         panel.add(messageLabel2);
 
-        JButton retryButton = new JButton("음료 선택 화면");
+        JButton retryButton = new JButton("메인 메뉴로 돌아가기");
         styleButton(retryButton);
         retryButton.setBounds(200, 250, 200, 50);
         retryButton.addActionListener(e -> {
@@ -107,7 +107,6 @@ public class PaymentUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Test the PaymentUI with dummy actions
         Runnable goToMainMenu = () -> System.out.println("Go to main menu");
         Runnable goToBeverageSelection = () -> System.out.println("Go to beverage selection");
 
