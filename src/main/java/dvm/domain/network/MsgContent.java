@@ -6,7 +6,7 @@
 //    private int coor_x;
 //    private int coor_y;
 //    private String cert_code;
-//    private boolean availability;
+//    private String availability;
 //
 //    public MsgContent(int item_code, int item_num) {
 //        this.item_code = item_code;
@@ -24,17 +24,27 @@
 //        this.item_code = item_code;
 //        this.item_num = item_num;
 //        this.cert_code = cert_code;
-//    }
+//        this.availability = cert_code;
 //
-//    public MsgContent(int item_code, int item_num, boolean availability) {
-//        this.item_code = item_code;
-//        this.item_num = item_num;
-//        this.availability = availability;
 //    }
 //
 //    public int getItem_code() {
 //        return item_code;
 //    }
+//
+//
+//    @Override
+//    public String toString() {
+//        return "MsgContent{" +
+//                "item_code=" + item_code +
+//                ", item_num=" + item_num +
+//                ", cert_code='" + cert_code + '\'' +
+//                ", dvmX=" + coor_x +
+//                ", dvmY=" + coor_y +
+//                ", availability=" + availability +
+//                '}';
+//    }
+//
 //
 //    public void setItem_code(int item_code) {
 //        this.item_code = item_code;
@@ -72,14 +82,12 @@
 //        this.cert_code = cert_code;
 //    }
 //
-//    public boolean isAvailability() {
+//    public String isAvailability() {
 //        return availability;
 //    }
 //
-//    public void setAvailability(boolean availability) {
-//        this.availability = availability;
-//    }
 //}
+
 package dvm.domain.network;
 
 public class MsgContent {
@@ -106,33 +114,20 @@ public class MsgContent {
         this.item_code = item_code;
         this.item_num = item_num;
         this.cert_code = cert_code;
-        this.availability = cert_code;
-
     }
 
-//    public MsgContent(int item_code, int item_num, boolean availability) {
-//        this.item_code = item_code;
-//        this.item_num = item_num;
-//        this.availability = availability;
-//    }
+    public MsgContent(int item_code, int item_num, String availability, int coor_x, int coor_y, String cert_code) {
+        this.item_code = item_code;
+        this.item_num = item_num;
+        this.availability = availability;
+        this.coor_x = coor_x;
+        this.coor_y = coor_y;
+        this.cert_code = cert_code;
+    }
 
     public int getItem_code() {
         return item_code;
     }
-
-
-    @Override
-    public String toString() {
-        return "MsgContent{" +
-                "item_code=" + item_code +
-                ", item_num=" + item_num +
-                ", cert_code='" + cert_code + '\'' +
-                ", dvmX=" + coor_x +
-                ", dvmY=" + coor_y +
-                ", availability=" + availability +
-                '}';
-    }
-
 
     public void setItem_code(int item_code) {
         this.item_code = item_code;
@@ -174,7 +169,16 @@ public class MsgContent {
         return availability;
     }
 
-//    public void setAvailability(Stirng availability) {
-//        this.availability = availability;
-//    }
+    @Override
+    public String toString() {
+        return "MsgContent{" +
+                "item_code=" + item_code +
+                ", item_num=" + item_num +
+                ", cert_code='" + cert_code + '\'' +
+                ", dvmX=" + coor_x +
+                ", dvmY=" + coor_y +
+                ", availability=" + availability +
+                '}';
+    }
 }
+

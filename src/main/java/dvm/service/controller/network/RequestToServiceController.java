@@ -199,12 +199,13 @@ public class RequestToServiceController {
 
     private AuthenticationCodeRepository authenticationCodeRepository = AuthenticationCodeRepository.getInstance();
     private CardServiceController cardServiceController = new CardServiceController();
+    private  String[] returnValue = new String[3];
 
     // 다른 모든 DVM들에게 재고확인 요청을 보냄
     public void sendStockRequest(int item_code, int item_num) {
 
         // 송신할 서버 IP와 Port 설정
-        String host = "172.30.1.98";
+        String host = "172.30.1.100";
         int port = 8080;
 
         // 메시지 생성
@@ -283,16 +284,18 @@ public class RequestToServiceController {
             if(minDistance >= distance) {
                 minDistance = distance;
                 index = i;
+                returnValue[0]=Integer.toString(dvmX);
+                returnValue[1]=Integer.toString(dvmY);
             }
         }
 
         return index;
     }
 
-    public Message sendPrepayRequest(int item_code, int item_num, String card_num, int price) {
+    public boolean sendPrepayRequest(int item_code, int item_num, String card_num, int price) {
 
         // 송신할 서버의 IP와 포트 설정
-        String host = "172.30.1.98";
+        String host = "172.30.1.100";
         int port = 8080;
 
         // 인증코드 생성
@@ -308,7 +311,7 @@ public class RequestToServiceController {
         if (selectIndex == -1){
             // 여기까지 오면 선결제 가능한 DVM이 없다는 뜻이다.
             cardServiceController.proceedRefund(card_num,price);
-            return null;
+            return false;
         }
         String dst_id = availableDVMMessages.get(selectIndex).getSrcId();
         Message request = new Message(msgType,src_id,dst_id,msgContent);
@@ -327,13 +330,14 @@ public class RequestToServiceController {
                 response = service.receiveMessage(Message.class);
                 if (response.getContent().isAvailability().equals("T")) {
                     service.stop();
-                    return response;
+                    returnValue[2]=cert_code;
+                    return true;
                 } else {
                     selectIndex = getNearestDVMIndex(selectIndex);
                     if (selectIndex == -1) {
                         // 선결제 요청을 보낼 수 있는 DVM이 없음
                         cardServiceController.proceedRefund(card_num, price);
-                        return null;
+                        return false;
                     }
 
                     request.setDstId(availableDVMMessages.get(selectIndex).getSrcId());
@@ -347,7 +351,7 @@ public class RequestToServiceController {
 
         // 여기까지 오면 선결제 가능한 DVM이 없다는 뜻이다.
         cardServiceController.proceedRefund(card_num,price);
-        return null;
+        return false;
     }
 
     public void setStockResponseMessages(List<Message> stockResponseMessages) {
@@ -365,5 +369,9 @@ public class RequestToServiceController {
     // availableDVMMessages 리스트를 반환하는 메서드 추가해도되나..
     public List<Message> getAvailableDVMMessages() {
         return availableDVMMessages;
+    }
+
+    public String[] getReturnValue(){
+        return returnValue;
     }
 }

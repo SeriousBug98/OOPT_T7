@@ -1,10 +1,10 @@
-abcd,5900
+abcd,8000
 efgh,0
 ijkl,0
 mnop,1000
-qrst,2000
+qrst,1000
 uvwx,0
-yzab,3000
+yzab,0
 cdef,0
-ghij,4000
+ghij,0
 klmn,0
