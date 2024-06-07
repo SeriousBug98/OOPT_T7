@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import static java.lang.System.out;
+
 public class JsonSocketServiceImpl implements JsonSocketService{
 
     private Socket socket;
@@ -21,6 +23,7 @@ public class JsonSocketServiceImpl implements JsonSocketService{
 
     @Override
     public void start() {
+        out.println("Starting JSON socket service...");
         try {
             this.writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
             this.reader = new BufferedReader((new InputStreamReader(socket.getInputStream(), "UTF-8")));
@@ -31,6 +34,7 @@ public class JsonSocketServiceImpl implements JsonSocketService{
 
     @Override
     public void stop() {
+        out.println("Stopping JSON socket service...");
         try {
             writer.close();
             reader.close();
@@ -43,10 +47,14 @@ public class JsonSocketServiceImpl implements JsonSocketService{
     @Override
     public void sendMessage(Object message) {
         writer.println(gson.toJson(message));
+        String json = gson.toJson(message);
+//        out.println(json);
+        out.println("Sent: " + json);
     }
 
     @Override
     public <T> T receiveMessage(Class<T> clazz) {
+
         try {
             return gson.fromJson(reader.readLine(), clazz);
         } catch (Exception e) {

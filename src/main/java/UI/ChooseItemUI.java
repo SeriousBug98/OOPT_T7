@@ -1,11 +1,11 @@
+
 package UI;
 
+import dvm.domain.network.Message;
 import dvm.service.controller.card.CardServiceController;
-import dvm.service.controller.card.Refund;
 import dvm.service.controller.item.ItemCheck;
 import dvm.domain.item.ItemRepository;
 import dvm.service.controller.network.RequestToServiceController;
-import dvm.domain.network.Message;
 import dvm.domain.network.MsgContent;
 
 import javax.swing.*;
@@ -118,25 +118,14 @@ public class ChooseItemUI extends JPanel {
             } else {
                 System.out.println("현재 DVM에 재고 부족, 다른 DVM에 재고 확인 요청");
                 // 다른 DVM에 재고 확인
-                boolean result = requestToServiceController.init(selectedItemId, selectedQuantity, cardNumber, selectedPrice);
-                if (result) {
-                    int nearestDVMIndex = requestToServiceController.getNearestDVMIndex(-1);
-                    if (nearestDVMIndex != -1) {
-                        // DVM 정보를 가져와서 처리
-                        Message nearestDVM = requestToServiceController.getAvailableDVMMessages().get(nearestDVMIndex);
-                        MsgContent msgContent = nearestDVM.getContent();
-                        selectedDVMLocation = new int[]{msgContent.getCoor_x(), msgContent.getCoor_y()};
-                        authenticationCode = msgContent.getCert_code();
-                        System.out.println("선결제 가능한 DVM 위치: " + selectedDVMLocation[0] + ", " + selectedDVMLocation[1]);
-                        System.out.println("인증 코드: " + authenticationCode);
-                        cardLayout.show(mainPanel, "PrepayScreen");
-                    } else {
-                        System.out.println("선결제 가능한 DVM 없음");
-                        showNoDVMAvailableMessage();
-                    }
+                requestToServiceController.sendStockRequest(selectedItemId, selectedQuantity);
+                boolean checkDVM = requestToServiceController.checkAvailableDVM(selectedItemId, selectedQuantity, cardNumber, selectedPrice);
+                if (checkDVM) {
+                    cardLayout.show(mainPanel, "PrepayScreen");
+                    requestToServiceController.sendPrepayRequest(selectedItemId, selectedQuantity,cardNumber,selectedPrice);
                 } else {
                     System.out.println("다른 DVM에 재고 없거나 선결제 실패");
-                    showNoDVMAvailableMessage();
+                    cardLayout.show(mainPanel, "RefundScreen");
                 }
             }
         });
@@ -209,44 +198,24 @@ public class ChooseItemUI extends JPanel {
         titleLabel.setBounds(0, 0, 600, 50);
         panel.add(titleLabel);
 
-        if (selectedDVMLocation != null) {
-            String message = String.format("<html>(%02d,%02d) 위치의 자판기에서 해당 음료를 판매중입니다.<br>선결제를 진행하시겠습니까?</html>",
-                    selectedDVMLocation[0], selectedDVMLocation[1]);
-
-            JLabel messageLabel = new JLabel(message, JLabel.CENTER);
-            messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-            messageLabel.setBounds(50, 100, 500, 100);
-            panel.add(messageLabel);
-
-            JButton yesButton = new JButton("YES");
-            styleButton(yesButton);
-            yesButton.setBounds(150, 250, 100, 50);
-            yesButton.addActionListener(e -> {
-                Runnable onSuccess = () -> {
-                    boolean prepayResult = requestToServiceController.sendPrepayRequest(selectedItemId, selectedQuantity, cardNumber, selectedPrice);
-                    if (prepayResult) {
-                        showDVMLocation();
-                    } else {
-                        showPrepayFailureMessage();
-                    }
-                };
-                Runnable onInsufficientBalance = () -> {
-                    PaymentUI paymentUI = new PaymentUI(false, this::goToMainMenu, this::goToBeverageSelection);
-                    paymentUI.setVisible(true);
-                };
-                Runnable onRetry = () -> {
-                    cardLayout.show(mainPanel, "BeverageSelectionScreen");
-                };
-                CardInputUI cardInputUI = new CardInputUI(selectedPrice, onSuccess, onRetry);
-                cardInputUI.setVisible(true);
-            });
-            panel.add(yesButton);
-        } else {
-            JLabel messageLabel = new JLabel("선결제 가능한 DVM이 없습니다.", JLabel.CENTER);
-            messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-            messageLabel.setBounds(50, 100, 500, 100);
-            panel.add(messageLabel);
-        }
+        JButton yesButton = new JButton("YES");
+        styleButton(yesButton);
+        yesButton.setBounds(150, 250, 100, 50);
+        yesButton.addActionListener(e -> {
+            Runnable onSuccess = () -> {
+                showDVMLocation();
+            };
+            Runnable onInsufficientBalance = () -> {
+                PaymentUI paymentUI = new PaymentUI(false, this::goToMainMenu, this::goToBeverageSelection);
+                paymentUI.setVisible(true);
+            };
+            Runnable onRetry = () -> {
+                cardLayout.show(mainPanel, "BeverageSelectionScreen");
+            };
+            CardInputUI cardInputUI = new CardInputUI(selectedPrice, onSuccess, onRetry);
+            cardInputUI.setVisible(true);
+        });
+        panel.add(yesButton);
 
         JButton noButton = new JButton("NO");
         styleButton(noButton);
@@ -271,7 +240,7 @@ public class ChooseItemUI extends JPanel {
         titleLabel.setBounds(0, 0, 600, 50);
         panel.add(titleLabel);
 
-        JLabel messageLabel = new JLabel("<html>모든 DVM에서 선결제 실패하였습니다.<br>환불 처리가 완료되었습니다.</html>", JLabel.CENTER);
+        JLabel messageLabel = new JLabel("<html>모든 DVM에서 선결제 실패하였습니다.<br>결제를 하신 경우라면, 환불 처리가 완료되었습니다.</html>", JLabel.CENTER);
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         messageLabel.setBounds(50, 100, 500, 100);
         panel.add(messageLabel);
@@ -309,11 +278,13 @@ public class ChooseItemUI extends JPanel {
         titleLabel.setBounds(0, 0, 400, 50);
         panel.add(titleLabel);
 
-        JLabel messageLabel = new JLabel(String.format("<html>선결제가 완료되었습니다.<br>다음 위치에서 음료를 수령하세요: (%02d, %02d)<br>인증 코드: %s</html>",
-                selectedDVMLocation[0], selectedDVMLocation[1], authenticationCode), JLabel.CENTER);
-        messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        messageLabel.setBounds(50, 60, 300, 100);
-        panel.add(messageLabel);
+//        JLabel messageLabel = new JLabel(String.format("<html>선결제가 완료되었습니다.<br>다음 위치에서 음료를 수령하세요: (%02d, %02d)<br>인증 코드: %s</html>",
+//                selectedDVMLocation[0], selectedDVMLocation[1], authenticationCode), JLabel.CENTER);
+//        messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+//        messageLabel.setBounds(50, 60, 300, 100);
+//        panel.add(messageLabel);
+
+
 
         JButton okButton = new JButton("OK");
         styleButton(okButton);
@@ -361,78 +332,6 @@ public class ChooseItemUI extends JPanel {
 
         successFrame.add(panel);
         successFrame.setVisible(true);
-    }
-
-    private void showNoDVMAvailableMessage() {
-        JFrame noDVMFrame = new JFrame("No DVM Available");
-        noDVMFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        noDVMFrame.setSize(400, 200);
-        noDVMFrame.setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
-
-        JLabel titleLabel = new JLabel("No DVM Available", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLabel.setOpaque(true);
-        titleLabel.setBackground(new Color(0x3B5998));
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBounds(0, 0, 400, 50);
-        panel.add(titleLabel);
-
-        JLabel messageLabel = new JLabel("<html>모든 DVM에서 재고가 부족합니다.<br>메인화면으로 돌아갑니다.</html>", JLabel.CENTER);
-        messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        messageLabel.setBounds(50, 60, 300, 100);
-        panel.add(messageLabel);
-
-        JButton okButton = new JButton("OK");
-        styleButton(okButton);
-        okButton.setBounds(150, 150, 100, 30);
-        okButton.addActionListener(e -> {
-            goToMainMenu();
-            noDVMFrame.dispose();
-        });
-        panel.add(okButton);
-
-        noDVMFrame.add(panel);
-        noDVMFrame.setVisible(true);
-    }
-
-    private void showPrepayFailureMessage() {
-        JFrame prepayFailureFrame = new JFrame("Prepay Failure");
-        prepayFailureFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        prepayFailureFrame.setSize(400, 250);
-        prepayFailureFrame.setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
-
-        JLabel titleLabel = new JLabel("Prepay Failure", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLabel.setOpaque(true);
-        titleLabel.setBackground(new Color(0x3B5998));
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBounds(0, 0, 400, 50);
-        panel.add(titleLabel);
-
-        JLabel messageLabel = new JLabel("<html>선결제에 실패하였습니다.<br>환불이 진행됩니다.<br>메인화면으로 돌아갑니다.</html>", JLabel.CENTER);
-        messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        messageLabel.setBounds(50, 60, 300, 100);
-        panel.add(messageLabel);
-
-        JButton okButton = new JButton("OK");
-        styleButton(okButton);
-        okButton.setBounds(150, 150, 100, 30);
-        okButton.addActionListener(e -> {
-            Refund refund = new Refund();
-            refund.proceedRefund(cardNumber, selectedPrice);
-            goToMainMenu();
-            prepayFailureFrame.dispose();
-        });
-        panel.add(okButton);
-
-        prepayFailureFrame.add(panel);
-        prepayFailureFrame.setVisible(true);
     }
 
     private void styleButton(JButton button) {
