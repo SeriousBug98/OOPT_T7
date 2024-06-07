@@ -27,7 +27,7 @@ public class RequestToServiceController {
 
         // 메시지 생성
         MsgType msgType = MsgType.req_stock;
-        MsgContent msgContent = new MsgContent(item_code,item_num); // 아이템 코드랑 item_num은 넘겨받아야됨
+        MsgContent msgContent = new MsgContent(Integer.toString(item_code),Integer.toString(item_num)); // 아이템 코드랑 item_num은 넘겨받아야됨
         String src_id = "Team7";
         String dst_id = "0";
         Message msg = new Message(msgType,src_id,dst_id,msgContent);
@@ -68,10 +68,10 @@ public class RequestToServiceController {
 
         Message message = stockResponseMessages.get(0);
         MsgContent msgContent = message.getContent();
-        int otherDVMItemNum = msgContent.getItem_num();//응답 받은 다른 dvm의 item 재고 개수
-        int otherDVMItemCode = msgContent.getItem_code();//응답 받은 item code
+        String otherDVMItemNum = msgContent.getItem_num();//응답 받은 다른 dvm의 item 재고 개수
+        String otherDVMItemCode = msgContent.getItem_code();//응답 받은 item code
 
-        if (item_num <= otherDVMItemNum && item_code == otherDVMItemCode)//continue;
+        if (item_num <= Integer.parseInt(otherDVMItemNum) && item_code == Integer.parseInt(otherDVMItemCode))//continue;
             isChecked = true;
 
         //}
@@ -119,7 +119,7 @@ public class RequestToServiceController {
 
         // 메시지 생성
         MsgType msgType = MsgType.req_prepay;
-        MsgContent msgContent = new MsgContent(item_code,item_num,cert_code); // 아이템 코드랑 item_num은 넘겨받아야됨
+        MsgContent msgContent = new MsgContent(Integer.toString(item_code),Integer.toString(item_num),cert_code); // 아이템 코드랑 item_num은 넘겨받아야됨
         String src_id = "Team7";
         int selectIndex = getNearestDVMIndex(-1);
         if (selectIndex == -1){

@@ -57,7 +57,7 @@ public class RequestFromServiceControllerTest {
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
             // 클라이언트 메시지 생성 및 전송
-            Message clientMessage = new Message(MsgType.req_stock, "team1", "team7", new MsgContent(19, 1));
+            Message clientMessage = new Message(MsgType.req_stock, "team1", "team7", new MsgContent("19", "1"));
             Gson gson = new Gson();
             String json = gson.toJson(clientMessage);
             out.write(json);
@@ -88,7 +88,7 @@ public class RequestFromServiceControllerTest {
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
             // 클라이언트 메시지 생성 및 전송
-            Message clientMessage = new Message(MsgType.req_prepay, "team1", "team7", new MsgContent(19, 1, "12345"));
+            Message clientMessage = new Message(MsgType.req_prepay, "team1", "team7", new MsgContent("19", "1", "12345"));
             Gson gson = new Gson();
             String json = gson.toJson(clientMessage);
             out.write(json);
@@ -109,8 +109,8 @@ public class RequestFromServiceControllerTest {
             System.out.println();
 
             ItemRepository itemRepository = ItemRepository.getInstance();
-            System.out.println(itemRepository.countItem(responseMessage.getContent().getItem_code()));
-            Assertions.assertEquals(9, itemRepository.countItem(responseMessage.getContent().getItem_code()));
+            System.out.println(itemRepository.countItem(Integer.parseInt(responseMessage.getContent().getItem_code())));
+            Assertions.assertEquals(9, itemRepository.countItem(Integer.parseInt(responseMessage.getContent().getItem_code())));
 
 
             AuthenticationCodeFind authenticationCodeFind = new AuthenticationCodeFind();

@@ -26,7 +26,7 @@ public class RequestFromServiceController {
         MsgType msgType = msg.getType();
         String src_id = "team7"; //우리 DVM의 id
         String dst_id = msg.getSrcId(); //요청이 왔던 DVM의 id
-        int itemCode = msg.getContent().getItem_code();
+        String itemCode = msg.getContent().getItem_code();
 
         if (msgType != MsgType.req_stock){
             System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
@@ -37,8 +37,8 @@ public class RequestFromServiceController {
 
         //itemCheck.process 를 쓰면 재고 개수를 알 수 없음
         // -> itemRepository 의 countItem 사용했습니다.
-        int itemCount = itemRepository.countItem(itemCode);
-        MsgContent msgContent = new MsgContent(itemCode, itemCount, dvmX, dvmY);
+        int itemCount = itemRepository.countItem(Integer.parseInt(itemCode));
+        MsgContent msgContent = new MsgContent(itemCode, Integer.toString(itemCount), dvmX, dvmY);
         Message message = new Message(MsgType.resp_stock, src_id, dst_id, msgContent);
 
         return message;
@@ -51,8 +51,8 @@ public class RequestFromServiceController {
         MsgType msgType = msg.getType();
         String src_id = msg.getDstId(); //우리 DVM의 id
         String dst_id = msg.getSrcId(); //요청이 왔던 DVM의 id
-        int itemCode = msg.getContent().getItem_code();
-        int itemNum = msg.getContent().getItem_num();
+        String itemCode = msg.getContent().getItem_code();
+        String itemNum = msg.getContent().getItem_num();
         String cert_code = msg.getContent().getCert_code();
 
         boolean availability = true;
@@ -69,18 +69,18 @@ public class RequestFromServiceController {
         System.out.println("Received PrePayRequest getType: " + msgType);
 
         //우리 DVM에서 재고가 부족할때 -> 선결제 불가로 응답
-        if (!checkItemNum(itemCode, itemNum)){
+        if (!checkItemNum(Integer.parseInt(itemCode), Integer.parseInt(itemNum))){
             System.out.println("해당 음료에 대한 재고가 부족합니다.");
             availability = false;
         }//재고가 충분하면 인증코드 저장 & 재고 감소 시킴
         else{
             authenticationCodeSave.process(cert_code);
-            itemRepository.updateItemStock(itemCode, 0-itemNum);
+            itemRepository.updateItemStock(Integer.parseInt(itemCode), 0-Integer.parseInt(itemNum));
         }
 
         //checkItemNum 로직 사용 -> itemCheck.process 필요없음. 삭제
         //itemRepository.countItem 이용해서 재고 개수 가져왔습니다.
-        int itemCount = itemRepository.countItem(itemCode);
+        String itemCount = Integer.toString(itemRepository.countItem(Integer.parseInt(itemCode)));
         MsgContent msgContent = new MsgContent(itemCode, itemCount, availability);
         Message message = new Message(MsgType.resp_prepay, src_id, dst_id, msgContent);
 
