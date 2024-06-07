@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class RequestFromServiceControllerTest {
-    private static final int PORT = 9090;
+    private static final int PORT = 8080;
 
     public static void main(String[] args) {
         RequestFromServiceController requestFromServiceController = new RequestFromServiceController();
@@ -52,7 +52,7 @@ public class RequestFromServiceControllerTest {
 
 
     private static void runClient1() {
-        try (Socket socket = new Socket("localhost", PORT);
+        try (Socket socket = new Socket("43.203.97.72", PORT);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
@@ -83,7 +83,7 @@ public class RequestFromServiceControllerTest {
     }
 
     private static void runClient2() {
-        try (Socket socket = new Socket("localhost", PORT);
+        try (Socket socket = new Socket("43.203.97.72", PORT);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 

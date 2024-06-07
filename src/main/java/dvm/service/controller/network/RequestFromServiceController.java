@@ -1,3 +1,4 @@
+
 package dvm.service.controller.network;
 
 import dvm.domain.item.ItemRepository;
@@ -6,16 +7,19 @@ import dvm.domain.network.MsgContent;
 import dvm.domain.network.MsgType;
 import dvm.service.controller.authenticaiton.AuthenticationCodeSave;
 import dvm.service.controller.item.ItemCheck;
+import dvm.service.controller.item.ItemUpdate;
 
 //other DVM에서 요청으로 받은 메시지를 처리해서 응답 메시지를 만듦
 public class RequestFromServiceController {
     private ItemRepository itemRepository = ItemRepository.getInstance();
     private AuthenticationCodeSave authenticationCodeSave = new AuthenticationCodeSave();
 
+
     //usecase 8 / 12
     //other DVM에게 보낼 재고 확인 응답 메시지 생성
     //8과 12에서 똑같은 일을 하는 것 같아서 12번 receiveStockRequestFrom만 남겼습니다.
     public Message receiveStockRequestFrom(Message msg){
+
         int dvmX = 0;
         int dvmY = 0;
 
@@ -29,6 +33,8 @@ public class RequestFromServiceController {
             return null;
         }
 
+        System.out.println("Received StockRequest getType: " + msgType);
+
         //itemCheck.process 를 쓰면 재고 개수를 알 수 없음
         // -> itemRepository 의 countItem 사용했습니다.
         int itemCount = itemRepository.countItem(itemCode);
@@ -41,6 +47,7 @@ public class RequestFromServiceController {
     //usecase 12
     //other DVM에게 보낼 선결제 응답 메시지 생성
     public Message receivePrepayRequestFrom(Message msg){
+
         MsgType msgType = msg.getType();
         String src_id = msg.getDstId(); //우리 DVM의 id
         String dst_id = msg.getSrcId(); //요청이 왔던 DVM의 id
@@ -55,9 +62,11 @@ public class RequestFromServiceController {
             return null;
         }
         if (msgType != MsgType.req_prepay){
-            System.out.println("메시지 타입 에러 : 재고 확인 요청 메시지가 아닙니다.");
+            System.out.println("메시지 타입 에러 : 선결제 확인 요청 메시지가 아닙니다.");
             return null;
         }
+
+        System.out.println("Received PrePayRequest getType: " + msgType);
 
         //우리 DVM에서 재고가 부족할때 -> 선결제 불가로 응답
         if (!checkItemNum(itemCode, itemNum)){
@@ -68,8 +77,6 @@ public class RequestFromServiceController {
             authenticationCodeSave.process(cert_code);
             itemRepository.updateItemStock(itemCode, 0-itemNum);
         }
-        
-
 
         //checkItemNum 로직 사용 -> itemCheck.process 필요없음. 삭제
         //itemRepository.countItem 이용해서 재고 개수 가져왔습니다.

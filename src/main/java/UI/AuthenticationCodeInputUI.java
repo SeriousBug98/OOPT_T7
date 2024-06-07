@@ -73,7 +73,6 @@ public class AuthenticationCodeInputUI extends JFrame {
             boolean isValidCode = codeFinder.process(authCode);
 
             if (isValidCode) {
-                updateStock();
                 showSuccessScreen();
                 dispose();
             } else {
@@ -182,10 +181,6 @@ public class AuthenticationCodeInputUI extends JFrame {
 
         successFrame.add(panel);
         successFrame.setVisible(true);
-    }
-
-    private void updateStock() {
-        // 재고 업데이트 로직을 여기에 구현합니다.
     }
 
     private void styleButton(JButton button) {

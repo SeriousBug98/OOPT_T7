@@ -19,10 +19,10 @@ public class ItemRepository {
         for (int i = 0; i < 20; i++) {
             Item item = new Item(i+1,1000);
             items.add(item);
-            stock.put(item,10);
+            stock.put(item,20);
         }
         //우리 자판기에서 판매하는 음료 번호를 저장
-        List<Integer> ourItemList = new ArrayList<>(Arrays.asList(3, 4, 5, 11, 12, 18, 19));
+        List<Integer> ourItemList = new ArrayList<>(Arrays.asList(1, 4, 5, 11, 12, 18, 19));
 
         // stock을 순회하면서 ourItemList에 없는 음료의 재고를 0으로 설정
         for (Map.Entry<Item, Integer> entry : stock.entrySet()) {

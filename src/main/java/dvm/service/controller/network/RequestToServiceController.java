@@ -22,8 +22,8 @@ public class RequestToServiceController {
     public void sendStockRequest(int item_code, int item_num) {
 
         // 송신할 서버 IP와 Port 설정
-        String host = "localhost";
-        int port = 8080;
+        String host = "192.168.65.102";
+        int port = 9090;
 
         // 메시지 생성
         MsgType msgType = MsgType.req_stock;
@@ -33,38 +33,52 @@ public class RequestToServiceController {
         Message msg = new Message(msgType,src_id,dst_id,msgContent);
 
         // port 조정해야됨
-        for (int i = 0; i < 9; i++) {
-            try (Socket socket = new Socket(host, port+i)) {
-                JsonSocketServiceImpl service = new JsonSocketServiceImpl(socket);
-                service.start();
+        //for (int i = 0; i < 9; i++) {
+        try (Socket socket = new Socket(host, port)) {
+            JsonSocketServiceImpl service = new JsonSocketServiceImpl(socket);
+            service.start();
 
-                service.sendMessage(msg);
-                Message response = service.receiveMessage(Message.class);
-                stockResponseMessages.add(response);
+            service.sendMessage(msg);
+            Message response = service.receiveMessage(Message.class);
+            stockResponseMessages.add(response);
 
-                service.stop();
-            } catch (Exception e) {
-                System.out.println("Client exception: " + e.getMessage());
-                e.printStackTrace();
+            service.stop();
+
+            if(response == null){
+                System.out.println("서버에서 재고 응답 못받음");
             }
+
+        } catch (Exception e) {
+            System.out.println("Client exception: " + e.getMessage());
+            e.printStackTrace();
         }
+        //}
     }
 
     public boolean checkAvailableDVM(int item_code, int item_num, String card_num, int price) {
 
         boolean isChecked = false;
-        for (int i = 0; i < 9; i++) {
-            Message message = stockResponseMessages.get(i);
-            MsgContent msgContent = message.getContent();
-            int otherDVMItemNum = msgContent.getItem_num();
-            int otherDVMItemCode = msgContent.getItem_code();
 
-            if (item_num > otherDVMItemNum || item_code != otherDVMItemCode) continue;
-
-            availableDVMMessages.add(message);
-            isChecked = true;
+        if (stockResponseMessages.isEmpty()) {
+            System.out.println("재고 응답 메시지가 없습니다.");
+            return isChecked;
         }
-        if (isChecked == true) cardServiceController.proceedPayment(card_num,price);
+
+        //for (int i = 0; i < 9; i++) {
+
+        Message message = stockResponseMessages.get(0);
+        MsgContent msgContent = message.getContent();
+        int otherDVMItemNum = msgContent.getItem_num();//응답 받은 다른 dvm의 item 재고 개수
+        int otherDVMItemCode = msgContent.getItem_code();//응답 받은 item code
+
+        if (item_num <= otherDVMItemNum && item_code == otherDVMItemCode)//continue;
+            isChecked = true;
+
+        //}
+        if (isChecked == true){
+            availableDVMMessages.add(message);
+            cardServiceController.proceedPayment(card_num,price);
+        }
 
         return isChecked;
     }
@@ -96,8 +110,8 @@ public class RequestToServiceController {
     public Message sendPrepayRequest(int item_code, int item_num, String card_num, int price) {
 
         // 송신할 서버의 IP와 포트 설정
-        String host = "localhost";
-        int port = 8080;
+        String host = "192.168.65.102";
+        int port = 9090;
 
         // 인증코드 생성
         String cert_code = authenticationCodeRepository.createAuthenticationCode();
@@ -108,6 +122,11 @@ public class RequestToServiceController {
         MsgContent msgContent = new MsgContent(item_code,item_num,cert_code); // 아이템 코드랑 item_num은 넘겨받아야됨
         String src_id = "Team7";
         int selectIndex = getNearestDVMIndex(-1);
+        if (selectIndex == -1){
+            // 여기까지 오면 선결제 가능한 DVM이 없다는 뜻이다.
+            cardServiceController.proceedRefund(card_num,price);
+            return null;
+        }
         String dst_id = availableDVMMessages.get(selectIndex).getSrcId();
         Message request = new Message(msgType,src_id,dst_id,msgContent);
 
@@ -128,6 +147,12 @@ public class RequestToServiceController {
                     return response;
                 } else {
                     selectIndex = getNearestDVMIndex(selectIndex);
+                    if (selectIndex == -1) {
+                        // 선결제 요청을 보낼 수 있는 DVM이 없음
+                        cardServiceController.proceedRefund(card_num, price);
+                        return null;
+                    }
+
                     request.setDstId(availableDVMMessages.get(selectIndex).getSrcId());
                 }
 
@@ -159,4 +184,3 @@ public class RequestToServiceController {
         return availableDVMMessages;
     }
 }
-
