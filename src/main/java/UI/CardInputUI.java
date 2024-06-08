@@ -19,7 +19,7 @@ public class CardInputUI extends JFrame {
 
     public CardInputUI(int price, Runnable onSuccess, Runnable onRetry) {
         this.price = price;
-        cardServiceController = new CardServiceController();
+        cardServiceController = createCardServiceController();
 
         setTitle("Team 7 - Distributed Vending Machine");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -43,6 +43,9 @@ public class CardInputUI extends JFrame {
         cardLayout.show(mainPanel, "CardInputScreen");
     }
 
+    protected CardServiceController createCardServiceController() {
+        return new CardServiceController();
+    }
 
     private JPanel createCardInputScreen(Runnable onSuccess, Runnable onRetry) {
         JPanel panel = new JPanel();
@@ -62,15 +65,18 @@ public class CardInputUI extends JFrame {
         panel.add(instructionLabel);
 
         JTextField cardInputField = new JTextField();
+        cardInputField.setName("cardInputField"); // 이름 설정
         cardInputField.setBounds(150, 150, 300, 30);
         panel.add(cardInputField);
 
         JLabel attemptsLabel = new JLabel("남은 입력 횟수: 0" + attemptsLeft + "/03", JLabel.CENTER);
+        attemptsLabel.setName("attemptsLabel"); // 이름 설정
         attemptsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         attemptsLabel.setBounds(150, 200, 300, 30);
         panel.add(attemptsLabel);
 
         JButton okButton = new JButton("OK");
+        okButton.setName("okButton"); // 이름 설정
         styleButton(okButton);
         okButton.setBounds(250, 250, 100, 30);
         okButton.addActionListener(e -> {
@@ -89,14 +95,13 @@ public class CardInputUI extends JFrame {
                 }
                 cardInputField.setText("");
                 attemptsLabel.setText("남은 입력 횟수: 0" + attemptsLeft + "/03");
+                onRetry.run(); // ensure the retry callback is called
             }
         });
         panel.add(okButton);
 
         return panel;
     }
-
-
 
     private JPanel createInvalidCardScreen() {
         JPanel panel = new JPanel();
@@ -120,6 +125,7 @@ public class CardInputUI extends JFrame {
         panel.add(messageLabel2);
 
         JButton retryButton = new JButton("카드 정보 재입력");
+        retryButton.setName("retryButton"); // 이름 설정
         styleButton(retryButton);
         retryButton.setBounds(200, 250, 200, 50);
         retryButton.addActionListener(e -> cardLayout.show(mainPanel, "CardInputScreen"));
@@ -146,6 +152,7 @@ public class CardInputUI extends JFrame {
         panel.add(messageLabel);
 
         JButton retryButton = new JButton("카드 정보 재입력");
+        retryButton.setName("retryButton"); // 이름 설정
         styleButton(retryButton);
         retryButton.setBounds(200, 250, 200, 50);
         retryButton.addActionListener(e -> cardLayout.show(mainPanel, "CardInputScreen"));
@@ -172,6 +179,7 @@ public class CardInputUI extends JFrame {
         panel.add(messageLabel);
 
         JButton retryButton = new JButton("음료 선택 화면");
+        retryButton.setName("retryButton"); // 이름 설정
         styleButton(retryButton);
         retryButton.setBounds(200, 250, 200, 50);
         retryButton.addActionListener(e -> {
@@ -190,5 +198,4 @@ public class CardInputUI extends JFrame {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createLineBorder(new Color(0x3B5998), 1));
     }
-
 }
