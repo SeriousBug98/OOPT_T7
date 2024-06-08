@@ -22,7 +22,7 @@ public class ItemRepository {
             stock.put(item,10);
         }
         //우리 자판기에서 판매하는 음료 번호를 저장
-        List<Integer> ourItemList = new ArrayList<>(Arrays.asList(2,5, 10,11, 12, 18, 19));
+        List<Integer> ourItemList = new ArrayList<>(Arrays.asList(2,3,5, 10,11, 12, 18, 19));
 
         // stock을 순회하면서 ourItemList에 없는 음료의 재고를 0으로 설정
         for (Map.Entry<Item, Integer> entry : stock.entrySet()) {

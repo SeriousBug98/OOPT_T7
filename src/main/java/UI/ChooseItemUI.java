@@ -131,13 +131,15 @@ public class ChooseItemUI extends JPanel {
                     System.out.println("다른 DVM에 재고 없거나 선결제 실패");
                     cardLayout.show(mainPanel, "RefundScreen");
                 }
-//                if (checkDVM) checkPrepay = requestToServiceController.sendPrepayRequest(selectedItemId,selectedQuantity,cardNumber,selectedPrice);
-//                if (checkPrepay == true ){
+//                if (checkDVM) {
+//                    checkPrepay = requestToServiceController.sendPrepayRequest(selectedItemId, selectedQuantity, cardNumber, selectedPrice);
+//                }if (checkPrepay == true ){
 //                    String xLocation = requestToServiceController.getReturnValue()[0];
 //                    String yLocation = requestToServiceController.getReturnValue()[1];
 //                    String certCode = requestToServiceController.getReturnValue()[2];
 //                    System.out.println("선결제 가능한 위치" + xLocation+ ","+yLocation );
 //                    System.out.println("인증코드: "+certCode);
+//                    cardLayout.show(mainPanel, "PrepayScreen");
 //                    showDVMLocation();
 //                }
             }

@@ -144,7 +144,6 @@ public class RequestFromServiceController {
         int itemCode = msg.getContent().getItem_code();
         int itemNum = msg.getContent().getItem_num();
         String cert_code = msg.getContent().getCert_code();
-
         String availability = "T";
 
         if (!msg.getDstId().equals("Team7")){
@@ -173,7 +172,6 @@ public class RequestFromServiceController {
         int itemCount = itemRepository.countItem(itemCode);
         MsgContent msgContent = new MsgContent(itemCode, itemCount, availability);
         Message message = new Message(MsgType.resp_prepay, src_id, dst_id, msgContent);
-
         return message;
     }
 
