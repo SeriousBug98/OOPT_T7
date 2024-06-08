@@ -54,13 +54,13 @@ public class CardServiceControllerTest {
     @Test
     // 잔액이 충분한 경우를 확인하는 isBalanceSufficient 메서드를 테스트합니다.
     public void testIsBalanceSufficient_SufficientBalance() {
-        assertTrue(cardServiceController.isBalanceSufficient("1234567890", 500));
+        assertTrue(cardServiceController.requestCheckPayment("1234567890", 500));
     }
 
     @Test
     // 잔액이 부족한 경우를 확인하는 isBalanceSufficient 메서드를 테스트합니다.
     public void testIsBalanceSufficient_InsufficientBalance() {
-        assertFalse(cardServiceController.isBalanceSufficient("0987654321", 600));
+        assertFalse(cardServiceController.requestCheckPayment("0987654321", 600));
     }
 
     @Test

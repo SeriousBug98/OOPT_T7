@@ -10,14 +10,14 @@ public class CardServiceController {
         return cardCheck.checkCardNum(cardNum); // 카드 정보만 확인
     }
 
-    public boolean isBalanceSufficient(String cardNum, int price) {
+    public boolean requestCheckPayment(String cardNum, int price) {
         return cardCheck.checkCardBalance(cardNum, price); // 카드 잔액 확인
     }
 
     public boolean requestPayment(String cardNum, int price) {
         // cardNum은 UI단에서 받아옴
         boolean isCardValid = isValidCard(cardNum);
-        boolean isBalanceSufficient = isCardValid && isBalanceSufficient(cardNum, price);
+        boolean isBalanceSufficient = isCardValid && requestCheckPayment(cardNum, price);
 
         if (isBalanceSufficient) {
             payment.sendPayment(cardNum, price);
@@ -30,7 +30,7 @@ public class CardServiceController {
 
     public void proceedRefund(String cardNum, int price) {
         boolean isCardValid = isValidCard(cardNum);
-        boolean isBalanceSufficient = isCardValid && isBalanceSufficient(cardNum, price);
+        boolean isBalanceSufficient = isCardValid && requestCheckPayment(cardNum, price);
 
         if (isBalanceSufficient) {
             refund.proceedRefund(cardNum, price);
