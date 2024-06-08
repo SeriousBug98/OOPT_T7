@@ -46,7 +46,7 @@ public class CardPaymentProcessingTest {
     @Test
     public void testValidCardPayment() throws Exception {
         // Set up the mock to return true for valid card details
-        when(mockCardServiceController.proceedPayment("validCardDetails", 500)).thenReturn(true);
+        when(mockCardServiceController.requestPayment("validCardDetails", 500)).thenReturn(true);
 
         // Simulate entering valid card details and pressing OK
         JTextField cardInputField = (JTextField) findComponentByName(cardInputUI, "cardInputField");
@@ -64,13 +64,13 @@ public class CardPaymentProcessingTest {
         assertFalse(retryCalled, "Retry callback should not be called");
 
         // Verify that the mock was called as expected
-        verify(mockCardServiceController, times(1)).proceedPayment("validCardDetails", 500);
+        verify(mockCardServiceController, times(1)).requestPayment("validCardDetails", 500);
     }
 
     @Test
     public void testInvalidCardPayment() throws Exception {
         // Set up the mock to return false for invalid card details
-        when(mockCardServiceController.proceedPayment("invalidCardDetails", 500)).thenReturn(false);
+        when(mockCardServiceController.requestPayment("invalidCardDetails", 500)).thenReturn(false);
 
         // Simulate entering invalid card details and pressing OK
         JTextField cardInputField = (JTextField) findComponentByName(cardInputUI, "cardInputField");
@@ -88,7 +88,7 @@ public class CardPaymentProcessingTest {
         assertTrue(retryCalled, "Retry callback should be called");
 
         // Verify that the mock was called as expected
-        verify(mockCardServiceController, times(1)).proceedPayment("invalidCardDetails", 500);
+        verify(mockCardServiceController, times(1)).requestPayment("invalidCardDetails", 500);
     }
 
     private Component findComponentByName(Container container, String componentName) {

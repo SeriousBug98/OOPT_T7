@@ -260,7 +260,7 @@ public class RequestToServiceController {
         //}
         if (isChecked == true){
             availableDVMMessages.add(message);
-            cardServiceController.proceedPayment(card_num,price);
+            cardServiceController.requestPayment(card_num,price);
         }
 
         return isChecked;

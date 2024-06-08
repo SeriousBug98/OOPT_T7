@@ -66,13 +66,13 @@ public class CardServiceControllerTest {
     @Test
     // 결제가 성공하는 경우를 테스트합니다.
     public void testProceedPayment_Success() {
-        assertTrue(cardServiceController.proceedPayment("1234567890", 500));
+        assertTrue(cardServiceController.requestPayment("1234567890", 500));
     }
 
     @Test
     // 결제가 실패하는 경우를 테스트합니다.
     public void testProceedPayment_Failure() {
-        assertFalse(cardServiceController.proceedPayment("0987654321", 600));
+        assertFalse(cardServiceController.requestPayment("0987654321", 600));
     }
 
     @Test

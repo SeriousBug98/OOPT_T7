@@ -1,7 +1,6 @@
 package UI;
 
 import dvm.service.controller.card.CardServiceController;
-import dvm.service.controller.card.Refund;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,7 +80,7 @@ public class CardInputUI extends JFrame {
         okButton.setBounds(250, 250, 100, 30);
         okButton.addActionListener(e -> {
             String cardNumber = cardInputField.getText();
-            boolean isValidPayment = cardServiceController.proceedPayment(cardNumber, price);
+            boolean isValidPayment = cardServiceController.requestPayment(cardNumber, price);
 
             if (isValidPayment) {
                 onSuccess.run();

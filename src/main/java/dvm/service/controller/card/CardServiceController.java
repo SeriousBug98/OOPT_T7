@@ -14,7 +14,7 @@ public class CardServiceController {
         return cardCheck.checkCardBalance(cardNum, price); // 카드 잔액 확인
     }
 
-    public boolean proceedPayment(String cardNum, int price) {
+    public boolean requestPayment(String cardNum, int price) {
         // cardNum은 UI단에서 받아옴
         boolean isCardValid = isCardValid(cardNum);
         boolean isBalanceSufficient = isCardValid && isBalanceSufficient(cardNum, price);
