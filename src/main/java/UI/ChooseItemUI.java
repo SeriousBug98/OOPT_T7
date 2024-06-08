@@ -1,14 +1,11 @@
 
 package UI;
 
-import dvm.domain.network.Message;
-import dvm.service.controller.card.CardCheck;
 import dvm.service.controller.card.CardServiceController;
 import dvm.service.controller.card.Refund;
 import dvm.service.controller.item.ItemCheck;
 import dvm.domain.item.ItemRepository;
 import dvm.service.controller.network.RequestToServiceController;
-import dvm.domain.network.MsgContent;
 
 import javax.swing.*;
 import java.awt.*;
