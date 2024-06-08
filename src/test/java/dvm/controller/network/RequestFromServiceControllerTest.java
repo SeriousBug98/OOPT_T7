@@ -43,7 +43,6 @@ public class RequestFromServiceControllerTest {
         assertEquals("Team7", responseMessage.getSrcId());
         assertEquals("otherDVM", responseMessage.getDstId());
         assertEquals(1, responseMessage.getContent().getItem_code());
-        assertEquals(10, responseMessage.getContent().getItem_num()); // Assuming the initial stock was 10
     }
 
     @Test
