@@ -13,7 +13,7 @@ public class Payment {
 
     private boolean status=false;
 
-    public void proceedPayment(String cardNum, int price) {
+    public void sendPayment(String cardNum, int price) {
         try {
             List<String> lines = new ArrayList<>();
             BufferedReader reader = new BufferedReader(new FileReader(CARD_FILE_PATH));

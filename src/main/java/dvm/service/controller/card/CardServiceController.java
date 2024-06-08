@@ -20,7 +20,7 @@ public class CardServiceController {
         boolean isBalanceSufficient = isCardValid && isBalanceSufficient(cardNum, price);
 
         if (isBalanceSufficient) {
-            payment.proceedPayment(cardNum, price);
+            payment.sendPayment(cardNum, price);
         } else {
             System.out.println("결제 실패");
         }

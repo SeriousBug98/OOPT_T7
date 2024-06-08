@@ -42,7 +42,7 @@ public class PaymentTest {
     @Test
     // 결제가 성공하는 경우를 테스트합니다.
     public void testProceedPayment_Success() throws IOException {
-        payment.proceedPayment("1234567890", 500);
+        payment.sendPayment("1234567890", 500);
 
         // 파일 내용을 읽어서 확인
         List<String> lines = Files.readAllLines(Paths.get(CARD_FILE_PATH));
@@ -52,7 +52,7 @@ public class PaymentTest {
     @Test
     // 잔액이 부족한 경우 결제가 실패하는 것을 테스트합니다.
     public void testProceedPayment_InsufficientBalance() throws IOException {
-        payment.proceedPayment("0987654321", 600);
+        payment.sendPayment("0987654321", 600);
 
         // 파일 내용을 읽어서 확인
         List<String> lines = Files.readAllLines(Paths.get(CARD_FILE_PATH));
