@@ -43,6 +43,7 @@ public class CardInputUI extends JFrame {
         cardLayout.show(mainPanel, "CardInputScreen");
     }
 
+
     private JPanel createCardInputScreen(Runnable onSuccess, Runnable onRetry) {
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -190,20 +191,4 @@ public class CardInputUI extends JFrame {
         button.setBorder(BorderFactory.createLineBorder(new Color(0x3B5998), 1));
     }
 
-//    public static void main(String[] args) {
-//        // Test the CardInputUI with dummy actions
-//        Runnable onSuccess = () -> {
-//            PaymentUI paymentUI = new PaymentUI(true, () -> {}, () -> {});
-//            paymentUI.setVisible(true);
-//        };
-//        Runnable onRetry = () -> {
-//            ChooseItemUI chooseItemUI = new ChooseItemUI();
-//            chooseItemUI.setVisible(true);
-//        };
-//
-//        SwingUtilities.invokeLater(() -> {
-//            CardInputUI cardInputUI = new CardInputUI(1000, onSuccess, onRetry);
-//            cardInputUI.setVisible(true);
-//        });
-//    }
 }

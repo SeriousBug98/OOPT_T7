@@ -205,7 +205,7 @@ public class RequestToServiceController {
     public void sendStockRequest(int item_code, int item_num) {
 
         // 송신할 서버 IP와 Port 설정
-        String host = "172.30.1.100";
+        String host = "172.30.25.112";
         int port = 8080;
 
         // 메시지 생성
@@ -295,7 +295,7 @@ public class RequestToServiceController {
     public boolean sendPrepayRequest(int item_code, int item_num, String card_num, int price) {
 
         // 송신할 서버의 IP와 포트 설정
-        String host = "172.30.1.100";
+        String host = "172.30.25.112";
         int port = 8080;
 
         // 인증코드 생성

@@ -2,6 +2,7 @@
 package UI;
 
 import dvm.domain.network.Message;
+import dvm.service.controller.card.CardCheck;
 import dvm.service.controller.card.CardServiceController;
 import dvm.service.controller.card.Refund;
 import dvm.service.controller.item.ItemCheck;
@@ -125,7 +126,8 @@ public class ChooseItemUI extends JPanel {
                 if (checkDVM) {
                     cardLayout.show(mainPanel, "PrepayScreen");
                     requestToServiceController.sendPrepayRequest(selectedItemId, selectedQuantity,cardNumber,selectedPrice);
-                } else {
+                }
+                else {
                     System.out.println("다른 DVM에 재고 없거나 선결제 실패");
                     cardLayout.show(mainPanel, "RefundScreen");
                 }
@@ -221,18 +223,13 @@ public class ChooseItemUI extends JPanel {
             Runnable onSuccess = () -> {
                 showDVMLocation();
             };
-//            Runnable onInsufficientBalance = () -> {
-//                PaymentUI paymentUI = new PaymentUI(false, this::goToMainMenu, this::goToBeverageSelection);
-//                paymentUI.setVisible(true);
-//            };
 
+            // 카드 입력 창
             Runnable onRetry = () -> {
                 cardLayout.show(mainPanel, "BeverageSelectionScreen");
             };
             CardInputUI cardInputUI = new CardInputUI(selectedPrice, onSuccess, onRetry);
             cardInputUI.setVisible(true);
-
-
         });
         panel.add(yesButton);
 
@@ -268,7 +265,7 @@ public class ChooseItemUI extends JPanel {
         styleButton(okButton);
         okButton.setBounds(250, 250, 100, 50);
         okButton.addActionListener(e -> {
-
+            Refund refund = new Refund();
             goToMainMenu();
         });
         panel.add(okButton);
@@ -298,24 +295,11 @@ public class ChooseItemUI extends JPanel {
         titleLabel.setBounds(0, 0, 400, 50);
         panel.add(titleLabel);
 
-//        JLabel messageLabel = new JLabel(String.format("<html>선결제가 완료되었습니다.<br>다음 위치에서 음료를 수령하세요: <br>인증 코드: %s</html>",
-//              authenticationCode), JLabel.CENTER);
-//        messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-//        messageLabel.setBounds(50, 60, 300, 100);
-//        panel.add(messageLabel);
         JLabel messageLabel = new JLabel(String.format("<html><center>선결제가 완료되었습니다.<br>다음 위치에서 음료를 수령하세요: <br>위치: (%s, %s)<br>인증 코드: %s<center></html>",
                 requestToServiceController.getReturnValue()[0], requestToServiceController.getReturnValue()[1], requestToServiceController.getReturnValue()[2]), JLabel.CENTER);
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         messageLabel.setBounds(50, 70, 300, 100);
         panel.add(messageLabel);
-
-        //            String xLocation = requestToServiceController.getReturnValue()[0];
-//                    String yLocation = requestToServiceController.getReturnValue()[1];
-//                    String certCode = requestToServiceController.getReturnValue()[2];
-//                    System.out.println("선결제 가능한 위치" + xLocation+ ","+yLocation );
-//                    System.out.println("인증코드: "+certCode);
-//                    showDVMLocation();
-
 
         JButton okButton = new JButton("OK");
         styleButton(okButton);
