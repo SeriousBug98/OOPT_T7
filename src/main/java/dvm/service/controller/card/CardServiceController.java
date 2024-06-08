@@ -6,7 +6,7 @@ public class CardServiceController {
     private Payment payment = new Payment();
     private Refund refund = new Refund();
 
-    public boolean isCardValid(String cardNum) {
+    public boolean isValidCard(String cardNum) {
         return cardCheck.checkCardNum(cardNum); // 카드 정보만 확인
     }
 
@@ -16,7 +16,7 @@ public class CardServiceController {
 
     public boolean requestPayment(String cardNum, int price) {
         // cardNum은 UI단에서 받아옴
-        boolean isCardValid = isCardValid(cardNum);
+        boolean isCardValid = isValidCard(cardNum);
         boolean isBalanceSufficient = isCardValid && isBalanceSufficient(cardNum, price);
 
         if (isBalanceSufficient) {
@@ -29,7 +29,7 @@ public class CardServiceController {
     }
 
     public void proceedRefund(String cardNum, int price) {
-        boolean isCardValid = isCardValid(cardNum);
+        boolean isCardValid = isValidCard(cardNum);
         boolean isBalanceSufficient = isCardValid && isBalanceSufficient(cardNum, price);
 
         if (isBalanceSufficient) {

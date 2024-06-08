@@ -42,13 +42,13 @@ public class CardServiceControllerTest {
     @Test
     // 유효한 카드 번호를 확인하는 isCardValid 메서드를 테스트합니다.
     public void testIsCardValid_ValidCard() {
-        assertTrue(cardServiceController.isCardValid("1234567890"));
+        assertTrue(cardServiceController.isValidCard("1234567890"));
     }
 
     @Test
     // 유효하지 않은 카드 번호를 확인하는 isCardValid 메서드를 테스트합니다.
     public void testIsCardValid_InvalidCard() {
-        assertFalse(cardServiceController.isCardValid("1111111111"));
+        assertFalse(cardServiceController.isValidCard("1111111111"));
     }
 
     @Test
