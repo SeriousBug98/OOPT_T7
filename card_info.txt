@@ -1,7 +1,7 @@
-abcd,8000
+abcd,988000
 efgh,0
 ijkl,0
-mnop,1000
+mnop,0
 qrst,1000
 uvwx,0
 yzab,0

@@ -85,7 +85,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class JsonServer {
-    private static final int PORT = 8080; // 포트 번호 설정
+    private static final int PORT = 9090; // 포트 번호 설정
     private static final int MAX_THREADS = 10; // 최대 처리 스레드 수
 
     private RequestFromServiceController requestFromServiceController;

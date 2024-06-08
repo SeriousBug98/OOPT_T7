@@ -66,13 +66,9 @@ public class AdminUI extends JFrame {
         logoutButton.setBounds(225, 300, 150, 40);
         logoutButton.addActionListener(e -> {
             cardLayout.show(mainPanel, "LogoutScreen");
-            Timer timer = new Timer(2000, event -> {
-                MainUI mainUI = new MainUI();
-                mainUI.setVisible(true);
-                dispose();
-            });
-            timer.setRepeats(false);
-            timer.start();
+            MainUI mainUI = new MainUI();
+            mainUI.setVisible(true);
+            dispose();
         });
         panel.add(logoutButton);
 

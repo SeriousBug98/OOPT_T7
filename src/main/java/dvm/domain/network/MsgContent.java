@@ -116,14 +116,14 @@ public class MsgContent {
         this.cert_code = cert_code;
     }
 
-    public MsgContent(int item_code, int item_num, String availability, int coor_x, int coor_y, String cert_code) {
-        this.item_code = item_code;
-        this.item_num = item_num;
-        this.availability = availability;
-        this.coor_x = coor_x;
-        this.coor_y = coor_y;
-        this.cert_code = cert_code;
-    }
+//    public MsgContent(int item_code, int item_num, String cert_code, int coor_x, int coor_y, String availability) {
+//        this.item_code = item_code;
+//        this.item_num = item_num;
+//        this.availability = availability;
+//        this.coor_x = coor_x;
+//        this.coor_y = coor_y;
+//        this.cert_code = cert_code;
+//    }
 
     public int getItem_code() {
         return item_code;
@@ -168,6 +168,9 @@ public class MsgContent {
     public String isAvailability() {
         return availability;
     }
+
+
+
 
     @Override
     public String toString() {

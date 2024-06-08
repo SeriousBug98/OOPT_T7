@@ -205,7 +205,7 @@ public class RequestToServiceController {
     public void sendStockRequest(int item_code, int item_num) {
 
         // 송신할 서버 IP와 Port 설정
-        String host = "172.30.25.112";
+        String host = "172.30.1.37";
         int port = 8080;
 
         // 메시지 생성
@@ -226,7 +226,7 @@ public class RequestToServiceController {
             stockResponseMessages.add(response);
 
             service.stop();
-
+            System.out.println("msg = " + msg);
             if(response == null){
                 System.out.println("서버에서 재고 응답 못받음");
             }
@@ -295,7 +295,7 @@ public class RequestToServiceController {
     public boolean sendPrepayRequest(int item_code, int item_num, String card_num, int price) {
 
         // 송신할 서버의 IP와 포트 설정
-        String host = "172.30.25.112";
+        String host = "172.30.1.37";
         int port = 8080;
 
         // 인증코드 생성
@@ -348,6 +348,10 @@ public class RequestToServiceController {
                 e.printStackTrace();
             }
         }
+
+        // 위에서 isAvailability 반환 문제로 cert_code값이 제대로 출력 안돼서 일단 만들어놓음..
+        returnValue[2]=cert_code;
+
 
         // 여기까지 오면 선결제 가능한 DVM이 없다는 뜻이다.
         cardServiceController.proceedRefund(card_num,price);
