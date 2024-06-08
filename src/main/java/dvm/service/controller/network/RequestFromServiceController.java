@@ -167,10 +167,8 @@ public class RequestFromServiceController {
             itemRepository.updateItemStock(itemCode, 0-itemNum);
         }
 
-        //checkItemNum 로직 사용 -> itemCheck.process 필요없음. 삭제
-        //itemRepository.countItem 이용해서 재고 개수 가져왔습니다.
-        int itemCount = itemRepository.countItem(itemCode);
-        MsgContent msgContent = new MsgContent(itemCode, itemCount, availability);
+        //checkItemNum 사용 -> itemCheck.process 필요없음. 삭제
+        MsgContent msgContent = new MsgContent(itemCode, itemNum, availability);
         Message message = new Message(MsgType.resp_prepay, src_id, dst_id, msgContent);
         return message;
     }
